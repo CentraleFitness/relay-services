@@ -1,22 +1,22 @@
 #!/bin/bash
 ### BEGIN INIT INFO
-# Provides:          <your script name>
+# Provides:          start_server.sh
 # Required-Start:    $all
 # Required-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Manage my cool stuff
+# Short-Description: Manage the oled server
 ### END INIT INFO
 
 case "$1" in
 
     start)
-	/root/oled/venv/bin/python3 /root/oled/main.py
+	/root/oled_server/venv/bin/python3 /root/oled_server/main.py&
 	exit 0
 	;;
 
     stop)
-	/root/oled/venv/bin/python3 /root/oled/main.py stop
+	/root/oled_server/venv/bin/python3 /root/oled_server/client.py "stop:now"
 	exit 0
 	;;
 
