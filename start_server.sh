@@ -1,7 +1,7 @@
 #!/bin/bash
 ### BEGIN INIT INFO
 # Provides:          start_server.sh
-# Required-Start:    $all
+# Required-Start:    $network $remote_fs $syslog
 # Required-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6

@@ -52,6 +52,9 @@ if __name__ == "__main__":
     display.add_line(
         "Boot " + subprocess.check_output(
             "date '+%D %R'", shell=True).decode("utf-8"))
+    display.add_line(
+        "IP " + subprocess.check_output(
+            "hostname -I", shell=True).decode("utf-8"))
     display.refresh()
 
     my_pid = Pid("oled")
