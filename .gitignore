@@ -5,3 +5,5 @@ venv/
 *.pyc
 */*.pyc
 */*/*.pyc
+/.vs/oled_server/v15
+/.vs
