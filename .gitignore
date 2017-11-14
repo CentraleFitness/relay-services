@@ -7,3 +7,5 @@ venv/
 */*/*.pyc
 /.vs/oled_server/v15
 /.vs
+/oled_server.pyproj
+/oled_server.sln
