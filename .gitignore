@@ -9,3 +9,4 @@ venv/
 /.vs
 /oled_server.pyproj
 /oled_server.sln
+*.user
