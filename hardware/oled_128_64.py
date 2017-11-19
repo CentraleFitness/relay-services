@@ -1,5 +1,4 @@
-from display.dummy import Dummy
-from display.gcontainer import GContainer
+from hardware.gcontainer import GContainer
 
 from PIL import Image, ImageDraw
 
@@ -12,5 +11,5 @@ class Oled_128_64(object):
         self.draw = ImageDraw.Draw(self.image)
         self.content = GContainer()
 
-    def display_content(self):
+    def display_content(self) -> None:
         self.image.show(title="Debug")

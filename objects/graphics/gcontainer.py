@@ -1,10 +1,10 @@
 from PIL import Image
 
-from display.container import Container
-from display.objects.button import Button
-from display.objects.label import Label
-from display.objects.scrollbar import ScrollBar
-from display.objects.textbox import TextBox
+from objects.container import Container
+from objects.button import Button
+from objects.label import Label
+from objects.scrollbar import ScrollBar
+from objects.textbox import TextBox
 
 class GContainer(Container):
     """Short for 'Graphic Container'"""
