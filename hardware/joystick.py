@@ -13,7 +13,7 @@ class Joystick(object):
             )
         self.description = kwargs.get('description', "")
 
-    def get_inputs(self):
+    def get_inputs(self) -> list:
         inputs = list()
         for pbutton in self.pbuttons:
             mem = pbutton.get_status_update()
