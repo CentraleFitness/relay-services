@@ -12,20 +12,20 @@ class Pushbutton(object):
         ### Hardware setup
         if GPIO.getmode() in (GPIO.BOARD, None):
             GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUP_UP)
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         ###
         self.name = name
         self.pin = pin
         self.action = kwargs.get('action', None)
         self.description = kwargs.get('description', "")
-        self.status = PBStatus.IDLE
+        self.status = PBStatus.RELEASED
 
     def get_status_update(self):
         if not GPIO.input(self.pin) and self.status == PBStatus.RELEASED:
             self.status = PBStatus.PRESSED
             return (self.name, self.status)
         elif GPIO.input(self.pin) and self.status == PBStatus.PRESSED:
-            self.status = PBStatus.PRESSED
+            self.status = PBStatus.RELEASED
             return (self.name, self.status)
         return None
 
@@ -33,5 +33,5 @@ class Pushbutton(object):
         if not GPIO.input(self.pin) and self.status == PBStatus.RELEASED:
             self.status = PBStatus.PRESSED
         elif GPIO.input(self.pin) and self.status == PBStatus.PRESSED:
-            self.status = PBStatus.PRESSED
+            self.status = PBStatus.RELEASED
         return self.status
