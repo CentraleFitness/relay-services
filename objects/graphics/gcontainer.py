@@ -1,26 +1,42 @@
 from PIL import Image
 
 from objects.container import Container
-from objects.button import Button
-from objects.label import Label
-from objects.scrollbar import ScrollBar
-from objects.textbox import TextBox
+from objects.graphics.gbutton import GButton
+from objects.graphics.glabel import GLabel
+from objects.graphics.gscrollbar import GScrollBar
+from objects.graphics.gtextbox import GTextBox
+
+
+BLACK_AND_WHITE = '1'
+BLACK = 0
+
 
 class GContainer(Container):
     """Short for 'Graphic Container'"""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, size: tuple, pos: tuple, **kwargs):
+        """
+        size: a tuple containing the size (x, y) of the object
+        position: a tuple containing the distance (x, y)
+                  from the top-left corner of the display
+        kwargs:
+            objects: a list of Gobject to store in the container
+        """
+        self.gsize = size
+        self.gpos = pos
+        self.objects = kwargs.get('objects', list())
+        assert isinstance(self.objects, list)
+        return super().__init__(**kwargs)
 
     def translate(self) -> Image:
-        render = Image.new('1', (128, 64), color=0)
+        render = Image.new(
+            BLACK_AND_WHITE,
+            self.gsize,
+            color=BLACK)
         for obj in self.objects:
-            if isinstance(obj, Label):
-                pass
-            elif isinstance(obj, TextBox):
-                pass
-            elif isinstance(obj, Button):
-                pass
-            elif isinstance(obj, ScrollBar):
-                pass
-        return render
+            assert isinstance(
+                obj,
+                (GContainer, GButton, GLabel, GScrollBar, GTextBox))
+            img, pos = obj.translate()
+            render.paste(img, pos)
+        return render, self.gpos
