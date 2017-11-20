@@ -24,8 +24,6 @@ class GContainer(Container):
         """
         self.gsize = size
         self.gpos = pos
-        self.objects = kwargs.get('objects', list())
-        assert isinstance(self.objects, list)
         return super().__init__(**kwargs)
 
     def translate(self) -> Image:

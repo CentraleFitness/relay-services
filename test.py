@@ -1,10 +1,14 @@
-from hardware.oled_128_64 import Oled_128_64 as Oled
+from hardware.oled_128_64 import *
 from objects.graphics.gtextbox import *
+from objects.graphics.gcontainer import GContainer
 
 if __name__ == "__main__":
-    display = Oled()
-    display.content.objects.append(
-        GTextBox((128, 10), (0, 0), "Toto", x=10)
-        )
+    display = Oled_128_64(
+        content=GContainer(
+            SCREEN_SIZE,
+            (0, 0),
+            objects=[
+                GTextBox((100, 9), (0, 0), "Toto", x=1, y=-1)
+                ]))
     display.update_content()
     display.display_content()

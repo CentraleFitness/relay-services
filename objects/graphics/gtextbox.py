@@ -22,13 +22,15 @@ class GTextBox(TextBox):
             if fontname else ImageFont.load_default()
         self.gx = kwargs.get('x', 0)
         self.gy = kwargs.get('y', 0)
+        self.selected = True
         return super().__init__(*args, **kwargs)
 
     def translate(self):
         render = Image.new('1', self.gsize, 0)
         draw = ImageDraw.Draw(render)
         draw.text((self.gx, self.gy), self.text, 1, self.gfont)
-        tmp = render.convert('L')
-        tmp = ImageOps.invert(tmp)
-        tmp = tmp.convert('1')
-        return tmp, self.gpos
+        if self.selected:
+            render = render.convert('L')
+            render = ImageOps.invert(render)
+            render = render.convert('1')
+        return render, self.gpos
