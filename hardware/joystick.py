@@ -1,14 +1,22 @@
+from .pushbutton import Pushbutton
 
 class Joystick(object):
     """A Joystick"""
 
-    def __init__(self, pin: int):
-        self.pin = pin
-        self.action = {
-            'UP': None,
-            'DOWN': None,
-            'LEFT': None,
-            'RIGHT': None,
-            'PUSH': None
-            }
-        self.description = None
+    def __init__(self, *args, **kwargs):
+        self.pbuttons = (
+            Pushbutton('L_pin', 27),
+            Pushbutton('R_pin', 23),
+            Pushbutton('C_pin', 4),
+            Pushbutton('U_pin', 17),
+            Pushbutton('D_pin', 22)
+            )
+        self.description = kwargs.get('description', "")
+
+    def get_inputs(self):
+        inputs = list()
+        for pbutton in self.pbuttons:
+            mem = pbutton.get_status_update()
+            if mem:
+                inputs.append(mem)
+        return inputs
