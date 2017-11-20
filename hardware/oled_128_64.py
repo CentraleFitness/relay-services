@@ -14,7 +14,7 @@ class Oled_128_64(object):
         self.content = kwargs.get('content', None)
 
     def display_content(self) -> None:
-        self.image.show(title="Debug")
+        self.image.show()
 
     def update_content(self) -> None:
         if self.content:

@@ -22,7 +22,7 @@ class GTextBox(TextBox):
             if fontname else ImageFont.load_default()
         self.gx = kwargs.get('x', 0)
         self.gy = kwargs.get('y', 0)
-        self.selected = True
+        self.selected = False
         return super().__init__(*args, **kwargs)
 
     def translate(self):
