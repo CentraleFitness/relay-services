@@ -58,13 +58,13 @@ if __name__ == "__main__":
     try:
         while True:
             tmp = joy1.get_inputs()
-            if ('U_pin', PBStatus.RELEASED) in tmp:
+            if ('U', PBStatus.RELEASED) in tmp:
                 menu1.objects[cursor % len(menu1.objects)].selected = False
                 cursor -= 1
                 menu1.objects[cursor % len(menu1.objects)].selected = True
                 display.update_content()
                 display.display_content()
-            elif ('D_pin', PBStatus.RELEASED) in tmp:
+            elif ('D', PBStatus.RELEASED) in tmp:
                 menu1.objects[cursor % len(menu1.objects)].selected = False
                 cursor += 1
                 menu1.objects[cursor % len(menu1.objects)].selected = True
