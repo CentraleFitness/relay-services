@@ -1,4 +1,7 @@
+import platform
+
 from PIL import Image, ImageDraw
+
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_GPIO.I2C as I2C
 import Adafruit_SSD1306
