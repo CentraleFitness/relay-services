@@ -1,3 +1,4 @@
+from .cursor import Cursor
 
 class Container(object):
     """Contrain"""
@@ -5,3 +6,4 @@ class Container(object):
     def __init__(self, *args, **kwargs):
         self.objects = kwargs.get('objects', list())
         assert isinstance(self.objects, list)
+        self.cursor = Cursor(len(self.objects), True)

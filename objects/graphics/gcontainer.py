@@ -26,7 +26,8 @@ class GContainer(Container):
         self.gpos = pos
         return super().__init__(**kwargs)
 
-    def translate(self) -> Image:
+    def translate(self, *args, **kwargs) -> Image:
+        i = 0
         render = Image.new(
             BLACK_AND_WHITE,
             self.gsize,
@@ -35,6 +36,8 @@ class GContainer(Container):
             assert isinstance(
                 obj,
                 (GContainer, GButton, GLabel, GScrollBar, GTextBox))
-            img, pos = obj.translate()
+            img, pos = obj.translate(
+                selected=(True if i == self.cursor.curr else False))
             render.paste(img, pos)
+            i += 1
         return render, self.gpos

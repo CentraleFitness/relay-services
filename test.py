@@ -64,15 +64,17 @@ if __name__ == "__main__":
         while True:
             tmp = joy1.get_inputs()
             if ('U', PBStatus.RELEASED) in tmp:
-                menu1.objects[cursor % len(menu1.objects)].selected = False
-                cursor -= 1
-                menu1.objects[cursor % len(menu1.objects)].selected = True
+                menu1.cursor.prev()
+                #menu1.objects[cursor % len(menu1.objects)].selected = False
+                #cursor -= 1
+                #menu1.objects[cursor % len(menu1.objects)].selected = True
                 display.update_content()
                 display.display_content()
             elif ('D', PBStatus.RELEASED) in tmp:
-                menu1.objects[cursor % len(menu1.objects)].selected = False
-                cursor += 1
-                menu1.objects[cursor % len(menu1.objects)].selected = True
+                menu1.cursor.next()
+                #menu1.objects[cursor % len(menu1.objects)].selected = False
+                #cursor += 1
+                #menu1.objects[cursor % len(menu1.objects)].selected = True
                 display.update_content()
                 display.display_content()
             if a_button.get_status_update() == ('A', PBStatus.RELEASED):
