@@ -7,3 +7,7 @@ class Container(object):
         self.objects = kwargs.get('objects', list())
         assert isinstance(self.objects, list)
         self.cursor = Cursor(len(self.objects), True)
+
+    def interact(self):
+        # TODO
+        self.objects[self.cursor.curr].interact()
