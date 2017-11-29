@@ -13,6 +13,9 @@ class GTextBox(TextBox):
                   from the top-left corner of the parent container
         kwargs:
             font: The font to use, 'None' to use the default font
+            x: x offset
+            y: y offset
+            action: tuple as (function, (params, ))
         """
         self.gsize = size
         self.gpos = pos
@@ -22,8 +25,15 @@ class GTextBox(TextBox):
             if fontname else ImageFont.load_default()
         self.gx = kwargs.get('x', 0)
         self.gy = kwargs.get('y', 0)
+        self.action = kwargs.get('action', None)
+        self.goto = None
         #self.selected = False
         return super().__init__(*args, **kwargs)
+
+    def action_on_click(self):
+        if self.action:
+            return self.action[0], self.action[1]
+        return None
 
     def translate(self, *args, **kwargs):
         render = Image.new('1', self.gsize, 0)

@@ -17,17 +17,11 @@ if __name__ == "__main__":
     a_button = Pushbutton('A', 5)
     b_button = Pushbutton('B', 6)
 
-    menu1 = GContainer(
-        SCREEN_SIZE,
-        (0, 0),
-        objects=[
-            GTextBox((110, 9), (0, 0), "Broadcast", x=1, y=-1),
-            GTextBox((110, 9), (0, 9), "Connection status", x=1, y=-1),
-            GTextBox((110, 9), (0, 18), "System info", x=1, y=-1)
-        ])
+    display = Oled_128_64(content=None)
     menu2 = GContainer(
         SCREEN_SIZE,
         (0, 0),
+        #parent=menu1,
         objects=[
             GTextBox((110, 9), (0, 0), "Broadcasting...", x=1, y=-1),
             GTextBox((110, 9), (0, 9), "Found:", x=1, y=-1),
@@ -37,6 +31,7 @@ if __name__ == "__main__":
     menu3 = GContainer(
         SCREEN_SIZE,
         (0, 0),
+        #parent=menu1,
         objects=[
             GTextBox((110, 9), (0, 0), "Connection status:", x=1, y=-1),
             GTextBox((110, 9), (10, 9), "server: OK", x=1, y=-1),
@@ -45,19 +40,29 @@ if __name__ == "__main__":
     menu4 = GContainer(
         SCREEN_SIZE,
         (0, 0),
+        #parent=menu1,
         objects=[
             GTextBox((110, 9), (0, 0), "System info:", x=1, y=-1),
             GTextBox((110, 9), (10, 9), "Active since 6:00", x=1, y=-1),
             GTextBox((110, 9), (10, 18), "IP 127.0.1.1", x=1, y=-1),
         ])
 
+    menu1 = GContainer(
+        SCREEN_SIZE,
+        (0, 0),
+        objects=[
+            GTextBox((110, 9), (0, 0), "Broadcast", x=1, y=-1,
+                     action=(display._change_content, menu2)),
+            GTextBox((110, 9), (0, 9), "Connection status", x=1, y=-1,
+                     action=(display._change_content, menu3)),
+            GTextBox((110, 9), (0, 18), "System info", x=1, y=-1,
+                     action=(display._change_content, menu4))
+        ])
+
     menus = [menu2, menu3, menu4]
 
-    display = Oled_128_64(content=menu1)
+    display.content = menu1
 
-
-    cursor = 0
-    menu1.objects[cursor % len(menu1.objects)].selected = True
     display.update_content()
     display.display_content()
     try:
@@ -65,16 +70,10 @@ if __name__ == "__main__":
             tmp = joy1.get_inputs()
             if ('U', PBStatus.RELEASED) in tmp:
                 menu1.cursor.prev()
-                #menu1.objects[cursor % len(menu1.objects)].selected = False
-                #cursor -= 1
-                #menu1.objects[cursor % len(menu1.objects)].selected = True
                 display.update_content()
                 display.display_content()
             elif ('D', PBStatus.RELEASED) in tmp:
                 menu1.cursor.next()
-                #menu1.objects[cursor % len(menu1.objects)].selected = False
-                #cursor += 1
-                #menu1.objects[cursor % len(menu1.objects)].selected = True
                 display.update_content()
                 display.display_content()
             if a_button.get_status_update() == ('A', PBStatus.RELEASED):

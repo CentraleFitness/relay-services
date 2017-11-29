@@ -27,9 +27,6 @@ class Oled_128_64(object):
         self.content = kwargs.get('content', None)
 
     def display_content(self) -> None:
-        ### Windows
-        # self.image.show()
-        ### Raspbian
         if self.image:
             self.display.image(self.image)
             self.display.display()
@@ -41,3 +38,12 @@ class Oled_128_64(object):
             self.image, _ = self.content.translate()
         else:
             self.image = Image.new('1', self.size, 0)
+
+    def _change_content(self, new_content) -> None:
+        self.content = new_content
+
+    def interact(self, input: str) -> None:
+        if input == 'B' and self.content.parent:
+            self.content = self.content.parent
+        else:
+            self.content.action(input)

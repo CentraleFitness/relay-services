@@ -24,7 +24,15 @@ class GContainer(Container):
         """
         self.gsize = size
         self.gpos = pos
+        self.parent = kwargs.get('parent', None)
+        self.actions = dict()
+        self.action['U'] = self.cursor.prev()
+        self.action['D'] = self.cursor.next()
         return super().__init__(**kwargs)
+
+    def action(self, input: str) -> None:
+        if input in self.actions:
+            self.action[input]()
 
     def translate(self, *args, **kwargs) -> Image:
         i = 0

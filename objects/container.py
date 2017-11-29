@@ -10,4 +10,5 @@ class Container(object):
 
     def interact(self):
         # TODO
-        self.objects[self.cursor.curr].interact()
+        # self.objects[self.cursor.curr].interact()
+        pass
