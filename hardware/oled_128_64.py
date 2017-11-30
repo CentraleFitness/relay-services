@@ -15,6 +15,10 @@ class Oled_128_64(object):
     """description of class"""
 
     def __init__(self, i2c_bus=1, i2c_address=0x3c, *args, **kwargs):
+        """
+        kwargs:
+            content: A container
+        """
         self.display = Adafruit_SSD1306.SSD1306_128_64(
             rst=1,
             i2c_bus=i2c_bus,
@@ -44,6 +48,7 @@ class Oled_128_64(object):
 
     def interact(self, input: str) -> None:
         if input == 'B' and self.content.parent:
+            self.content.cursor.reset()
             self.content = self.content.parent
         else:
             self.content.action(input)

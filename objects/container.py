@@ -7,6 +7,7 @@ class Container(object):
         self.objects = kwargs.get('objects', list())
         assert isinstance(self.objects, list)
         self.cursor = Cursor(len(self.objects), True)
+        self.parent = kwargs.get('parent', None)
 
     def interact(self):
         # TODO
