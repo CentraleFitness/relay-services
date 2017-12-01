@@ -26,7 +26,7 @@ class GTextBox(TextBox):
             if fontname else ImageFont.load_default()
         self.gx = kwargs.get('x', 0)
         self.gy = kwargs.get('y', 0)
-        self.action = kwargs.get('action', (None, None))
+        self.action = kwargs.get('action', defaultdict(tuple))
         self.goto = None
         return super().__init__(*args, **kwargs)
 
