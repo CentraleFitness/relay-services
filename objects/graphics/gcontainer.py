@@ -24,16 +24,7 @@ class GContainer(Container):
         """
         self.gsize = size
         self.gpos = pos
-        self.actions = dict()
-        self.action['U'] = self.cursor.prev()
-        self.action['D'] = self.cursor.next()
         return super().__init__(**kwargs)
-
-    def interact(self, input: str) -> None:
-        if input in self.actions:
-            self.action[input]()
-            return None
-        return self.cursor().action(input)
 
     def translate(self, *args, **kwargs) -> Image:
         render = Image.new(
