@@ -68,8 +68,8 @@ if __name__ == "__main__":
     try:
         while True:
             tmp = joy1.get_inputs()
-            tmp.append(a_button.get_status_update())
-            tmp.append(b_button.get_status_update())
+            tmp.append(a_button.status())
+            tmp.append(b_button.status())
             for input in tmp:
                 if PBStatus.RELEASED in input:
                     display.interact(input[0])

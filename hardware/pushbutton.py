@@ -20,6 +20,12 @@ class Pushbutton(object):
         self.description = kwargs.get('description', "")
         self.status = PBStatus.RELEASED
 
+    def _update_status(self) -> None:
+        if not GPIO.input(self.pin) and self.status == PBStatus.RELEASED:
+            self.status = PBStatus.PRESSED
+        elif GPIO.input(self.pin) and self.status == PBStatus.PRESSED:
+            self.status = PBStatus.RELEASED
+
     def get_status_update(self):
         if not GPIO.input(self.pin) and self.status == PBStatus.RELEASED:
             self.status = PBStatus.PRESSED
@@ -29,9 +35,7 @@ class Pushbutton(object):
             return (self.name, self.status)
         return None
 
-    def get_status(self):
-        if not GPIO.input(self.pin) and self.status == PBStatus.RELEASED:
-            self.status = PBStatus.PRESSED
-        elif GPIO.input(self.pin) and self.status == PBStatus.PRESSED:
-            self.status = PBStatus.RELEASED
-        return self.status
+    def status(self, force_update=False) -> tuple:
+        if force_update:
+            self._update_status()
+        return (self.name, self.status)
