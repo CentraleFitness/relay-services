@@ -51,4 +51,8 @@ class Oled_128_64(object):
             self.content.cursor.reset()
             self.content = self.content.parent
         else:
-            self.content.action(input)
+            func, param = self.content.interact(input)
+            if func:
+                func(param)
+            # else:
+            #     do_nothing()

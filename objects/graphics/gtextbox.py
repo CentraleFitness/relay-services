@@ -25,15 +25,12 @@ class GTextBox(TextBox):
             if fontname else ImageFont.load_default()
         self.gx = kwargs.get('x', 0)
         self.gy = kwargs.get('y', 0)
-        self.action = kwargs.get('action', None)
+        self.action = kwargs.get('action', (None, None))
         self.goto = None
-        #self.selected = False
         return super().__init__(*args, **kwargs)
 
-    def action_on_click(self):
-        if self.action:
-            return self.action[0], self.action[1]
-        return None
+    def action_on_click(self) -> tuple:
+        return self.action
 
     def translate(self, *args, **kwargs):
         render = Image.new('1', self.gsize, 0)

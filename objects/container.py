@@ -1,4 +1,5 @@
 from .cursor import Cursor
+from .iterator import Iterator
 
 class Container(object):
     """Contrain"""
@@ -6,10 +7,9 @@ class Container(object):
     def __init__(self, *args, **kwargs):
         self.objects = kwargs.get('objects', list())
         assert isinstance(self.objects, list)
-        self.cursor = Cursor(len(self.objects), True)
+        self.cursor = Iterator(self.objects)
         self.parent = kwargs.get('parent', None)
 
-    def interact(self):
-        # TODO
-        # self.objects[self.cursor.curr].interact()
-        pass
+    def reset_iterator(self):
+        self.cursor = Iterator(self.objects)
+

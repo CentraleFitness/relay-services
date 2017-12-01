@@ -29,14 +29,13 @@ class GContainer(Container):
         self.action['D'] = self.cursor.next()
         return super().__init__(**kwargs)
 
-    def action(self, input: str) -> None:
+    def interact(self, input: str) -> None:
         if input in self.actions:
             self.action[input]()
-        else:
-            self.
+            return None
+        return self.cursor().action(input)
 
     def translate(self, *args, **kwargs) -> Image:
-        i = 0
         render = Image.new(
             BLACK_AND_WHITE,
             self.gsize,
@@ -46,7 +45,6 @@ class GContainer(Container):
                 obj,
                 (GContainer, GButton, GLabel, GScrollBar, GTextBox))
             img, pos = obj.translate(
-                selected=(True if i == self.cursor.curr else False))
+                selected=(True if obj is self.cursor() else False))
             render.paste(img, pos)
-            i += 1
         return render, self.gpos

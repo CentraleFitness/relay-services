@@ -59,30 +59,37 @@ if __name__ == "__main__":
                      action=(display._change_content, menu4))
         ])
 
-    menus = [menu2, menu3, menu4]
+    menu2.parent = menu1
+    menu3.parent = menu1
+    menu4.parent = menu1
 
     display.content = menu1
 
-    display.update_content()
-    display.display_content()
     try:
         while True:
             tmp = joy1.get_inputs()
-            if ('U', PBStatus.RELEASED) in tmp:
-                menu1.cursor.prev()
-                display.update_content()
-                display.display_content()
-            elif ('D', PBStatus.RELEASED) in tmp:
-                menu1.cursor.next()
-                display.update_content()
-                display.display_content()
-            if a_button.get_status_update() == ('A', PBStatus.RELEASED):
-                display.content = menus[cursor % len(menu1.objects)]
-                display.update_content()
-                display.display_content()
-            elif b_button.get_status_update() == ('B', PBStatus.RELEASED):
-                display.content = menu1
-                display.update_content()
-                display.display_content()
+            tmp.append(a_button.get_status_update())
+            tmp.append(b_button.get_status_update())
+            for input in tmp:
+                if PBStatus.RELEASED in input:
+                    display.interact(input[0])
+            #if ('U', PBStatus.RELEASED) in tmp:
+            #    menu1.cursor.prev()
+            #    display.update_content()
+            #    display.display_content()
+            #elif ('D', PBStatus.RELEASED) in tmp:
+            #    menu1.cursor.next()
+            #    display.update_content()
+            #    display.display_content()
+            #if a_button.get_status_update() == ('A', PBStatus.RELEASED):
+            #    display.content = menus[cursor % len(menu1.objects)]
+            #    display.update_content()
+            #    display.display_content()
+            #elif b_button.get_status_update() == ('B', PBStatus.RELEASED):
+            #    display.content = menu1
+            #    display.update_content()
+            #    display.display_content()
+            display.update_content()
+            display.display_content()
     except KeyboardInterrupt:
-        print("Ctrl-C")
+        print(" Killing the fun")
