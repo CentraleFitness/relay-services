@@ -68,10 +68,10 @@ if __name__ == "__main__":
     try:
         while True:
             tmp = joy1.get_inputs()
-            tmp.append(a_button.status())
-            tmp.append(b_button.status())
+            tmp.append(a_button.get_status_update())
+            tmp.append(b_button.get_status_update())
             for input in tmp:
-                if PBStatus.RELEASED in input:
+                if input and PBStatus.RELEASED in input:
                     display.interact(input[0])
             #if ('U', PBStatus.RELEASED) in tmp:
             #    menu1.cursor.prev()
