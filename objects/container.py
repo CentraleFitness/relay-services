@@ -10,8 +10,8 @@ class Container(object):
         self.parent = kwargs.get('parent', None)
         self.cursor = Iterator(self.objects)
         self.actions = dict()
-        self.action['U'] = self.cursor.prev()
-        self.action['D'] = self.cursor.next()
+        self.actions['U'] = self.cursor.prev()
+        self.actions['D'] = self.cursor.next()
 
     def reset_iterator(self):
         self.cursor = Iterator(self.objects)

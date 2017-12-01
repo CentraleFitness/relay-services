@@ -70,6 +70,7 @@ if __name__ == "__main__":
             tmp = joy1.get_inputs()
             tmp.append(a_button.get_status_update())
             tmp.append(b_button.get_status_update())
+            print(tmp)
             for input in tmp:
                 if PBStatus.RELEASED in input:
                     display.interact(input[0])

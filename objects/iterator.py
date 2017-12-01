@@ -1,10 +1,10 @@
 class Iterator(object):
     """description of class"""
 
-    def __init__(self, list):
+    def __init__(self, list, **kwargs):
         self.list  = list
         self.max = len(list)
-        self.circular = True
+        self.circular = kwargs.get('circular', True)
         self.curr = 0
         return super().__init__(**kwargs)
 
