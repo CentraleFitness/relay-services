@@ -36,6 +36,6 @@ class GContainer(Container):
                 obj,
                 (GContainer, GButton, GLabel, GScrollBar, GTextBox))
             img, pos = obj.translate(
-                selected=(True if obj is self.cursor() else False))
+                selected=(True if obj is self.iter() else False))
             render.paste(img, pos)
         return render, self.gpos

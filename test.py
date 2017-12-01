@@ -1,5 +1,5 @@
 import time
-
+from collections import defaultdict
 
 #if platform.system() == "Windows":
 #    print("Program running on windows")
@@ -52,11 +52,17 @@ if __name__ == "__main__":
         (0, 0),
         objects=[
             GTextBox((110, 9), (0, 0), "Broadcast", x=1, y=-1,
-                     action=(display._change_content, menu2)),
+                     action=defaultdict(
+                         tuple,
+                         {'A': (display._change_content, menu2)})),
             GTextBox((110, 9), (0, 9), "Connection status", x=1, y=-1,
-                     action=(display._change_content, menu3)),
+                     action=defaultdict(
+                         tuple,
+                         {'A': (display._change_content, menu3)})),
             GTextBox((110, 9), (0, 18), "System info", x=1, y=-1,
-                     action=(display._change_content, menu4))
+                     action=defaultdict(
+                         tuple,
+                         {'A': (display._change_content, menu4)})),
         ])
 
     menu2.parent = menu1

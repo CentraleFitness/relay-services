@@ -48,11 +48,12 @@ class Oled_128_64(object):
 
     def interact(self, input: str) -> None:
         if input == 'B' and self.content.parent:
-            self.content.cursor.reset()
+            self.content.iter.reset()
             self.content = self.content.parent
         else:
-            func, param = self.content.interact(input)
-            if func:
+            action = self.content.interact(input)
+            if action:
+                func, param = action
                 func(param)
             # else:
             #     do_nothing()
