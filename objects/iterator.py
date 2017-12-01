@@ -11,13 +11,13 @@ class Iterator(object):
     def reset(self) -> None:
         self.curr = 0
 
-    def next(self) -> None:
+    def next(self, *args, **kwargs) -> None:
         if self.curr == self.max - 1 and self.circular:
             self.curr = 0
         elif self.curr < self.max - 1:
             self.curr += 1
 
-    def prev(self) -> None:
+    def prev(self, *args, **kwargs) -> None:
         if self.curr == 0 and self.circular:
             self.curr = self.max - 1
         elif self.curr > 0:

@@ -10,14 +10,13 @@ class Container(object):
         self.parent = kwargs.get('parent', None)
         self.cursor = Iterator(self.objects)
         self.actions = dict()
-        self.actions['U'] = self.cursor.prev()
-        self.actions['D'] = self.cursor.next()
+        self.actions['U'] = (self.cursor.prev, None)
+        self.actions['D'] = (self.cursor.next, None)
 
     def reset_iterator(self):
         self.cursor = Iterator(self.objects)
 
     def interact(self, input: str) -> None:
         if input in self.actions:
-            self.action[input]()
-            return None
+            return self.actions[input]
         return self.cursor().action(input)
