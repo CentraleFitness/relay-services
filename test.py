@@ -15,16 +15,25 @@ from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
 
 
-def input_controller(input, queue):
-    while True:
-        if isinstance(input, Joystick):
-            for entry in input.get_input():
+class ThreadController():
+    def __init__(self):
+        self.running = True
+
+
+def input_controller(input, queue, controller):
+    print("Thread started", flush=True)
+    if isinstance(input, Joystick):
+        while controller.running:
+            for entry in input.get_inputs():
                 queue.put(entry)
-        elif isinstance(input, Pushbutton):
+            time.sleep(.05)
+    elif isinstance(input, Pushbutton):
+        while controller.running:
             mem = input.get_status_update()
             if mem:
                 queue.put(mem)
-
+            time.sleep(.05)
+    
 
 if __name__ == "__main__":
     joy1 = Joystick()
@@ -86,9 +95,11 @@ if __name__ == "__main__":
 
     awaiting_input = Queue()
 
+    c = ThreadController()
+    
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         tasks = [
-            executor.submit(controller, awaiting_input) \
+            executor.submit(input_controller, controller, awaiting_input) \
                 for controller in (joy1, a_button, b_button)
             ]
         try:
@@ -103,6 +114,7 @@ if __name__ == "__main__":
 
                 display.update_content()
                 display.display_content()
-                print("Loop duration: {}s".format(time.time() - start))
+                print(time.time() - start)
         except KeyboardInterrupt:
-            print(" Killing the fun")
+            print(" Killin' the fun")
+            c.running = False
