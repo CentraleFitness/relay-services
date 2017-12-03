@@ -99,7 +99,7 @@ if __name__ == "__main__":
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         tasks = [
-            executor.submit(input_controller, controller, awaiting_input) \
+            executor.submit(input_controller, controller, awaiting_input, c) \
                 for controller in (joy1, a_button, b_button)
             ]
         try:
