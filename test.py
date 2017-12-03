@@ -1,5 +1,8 @@
 import time
+import concurrent.futures
 from collections import defaultdict
+from queue import Queue
+
 
 #if platform.system() == "Windows":
 #    print("Program running on windows")
@@ -10,6 +13,17 @@ from hardware.joystick import Joystick
 from hardware.pushbutton import Pushbutton, PBStatus
 from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
+
+
+def input_controller(input, queue):
+    while True:
+        if isinstance(input, Joystick):
+            for entry in input.get_input():
+                queue.put(entry)
+        elif isinstance(input, Pushbutton):
+            mem = input.get_status_update()
+            if mem:
+                queue.put(mem)
 
 
 if __name__ == "__main__":
@@ -46,7 +60,6 @@ if __name__ == "__main__":
             GTextBox((110, 9), (10, 9), "Active since 6:00", x=1, y=-1),
             GTextBox((110, 9), (10, 18), "IP 127.0.1.1", x=1, y=-1),
         ])
-
     menu1 = GContainer(
         SCREEN_SIZE,
         (0, 0),
@@ -71,31 +84,25 @@ if __name__ == "__main__":
 
     display.content = menu1
 
-    try:
-        while True:
-            tmp = joy1.get_inputs()
-            tmp.append(a_button.get_status_update())
-            tmp.append(b_button.get_status_update())
-            for input in tmp:
-                if input and PBStatus.RELEASED in input:
-                    display.interact(input[0])
-            #if ('U', PBStatus.RELEASED) in tmp:
-            #    menu1.cursor.prev()
-            #    display.update_content()
-            #    display.display_content()
-            #elif ('D', PBStatus.RELEASED) in tmp:
-            #    menu1.cursor.next()
-            #    display.update_content()
-            #    display.display_content()
-            #if a_button.get_status_update() == ('A', PBStatus.RELEASED):
-            #    display.content = menus[cursor % len(menu1.objects)]
-            #    display.update_content()
-            #    display.display_content()
-            #elif b_button.get_status_update() == ('B', PBStatus.RELEASED):
-            #    display.content = menu1
-            #    display.update_content()
-            #    display.display_content()
-            display.update_content()
-            display.display_content()
-    except KeyboardInterrupt:
-        print(" Killing the fun")
+    awaiting_input = Queue()
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        tasks = [
+            executor.submit(controller, awaiting_input) \
+                for controller in (joy1, a_button, b_button)
+            ]
+        try:
+            while True:
+                start = time.time()
+
+                while not awaiting_input.empty():
+                    input = awaiting_input.get()
+                    if input[1] == PBStatus.RELEASED:
+                        display.interact(input[0])
+                    awaiting_input.task_done()
+
+                display.update_content()
+                display.display_content()
+                print("Loop duration: {}s".format(time.time() - start))
+        except KeyboardInterrupt:
+            print(" Killing the fun")
