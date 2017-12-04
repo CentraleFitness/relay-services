@@ -1,6 +1,7 @@
 import time
 import concurrent.futures
 from collections import defaultdict
+from enum import Enum
 from queue import Queue
 
 
@@ -14,10 +15,41 @@ from hardware.pushbutton import Pushbutton, PBStatus
 from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
 
+class ThreadStatus(Enum):
+    STOPPED = 0
+    RUNNING = 1
 
 class ThreadController():
-    def __init__(self):
-        self.running = True
+    def __init__(self, *args, **kwargs):
+        self.workers = kwargs.get('max_workers', 3)
+        self.executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.workers)
+        self.futures = dict()
+        self.status = dict()
+        self.queue = Queue()
+        self.last_thread_id = 0x00
+
+    def _get_id(self):
+        self.last_thread_id += 1
+        return self.last_thread_id - 1
+
+    def start(self, func, *args, **kwargs):
+        if isinstance(kwargs.get('chain', None), (list, tuple)):
+            for t_args in kwargs['chain']:                   
+                id = self._get_id()
+                self.futures[id] = self.executor.submit(id, *t_args)
+                self.status[id] = ThreadStatus.RUNNING
+        else:
+            id = self._get_id()
+            self.futures[id] = self.executor.submit(func, id, *args)
+            self.status[id] = ThreadStatus.RUNNING
+
+    def stop(self, thread_id):
+        self.status[thread_id] = ThreadStatus.STOPPED
+
+    def stop_all(self):
+        for thread in self.status:
+            self.status[thread] = ThreadStatus.STOPPED
 
 
 def input_controller(input, queue, controller):
@@ -44,7 +76,6 @@ if __name__ == "__main__":
     menu2 = GContainer(
         SCREEN_SIZE,
         (0, 0),
-        #parent=menu1,
         objects=[
             GTextBox((110, 9), (0, 0), "Broadcasting...", x=1, y=-1),
             GTextBox((110, 9), (0, 9), "Found:", x=1, y=-1),
@@ -54,7 +85,6 @@ if __name__ == "__main__":
     menu3 = GContainer(
         SCREEN_SIZE,
         (0, 0),
-        #parent=menu1,
         objects=[
             GTextBox((110, 9), (0, 0), "Connection status:", x=1, y=-1),
             GTextBox((110, 9), (10, 9), "server: OK", x=1, y=-1),
@@ -63,7 +93,6 @@ if __name__ == "__main__":
     menu4 = GContainer(
         SCREEN_SIZE,
         (0, 0),
-        #parent=menu1,
         objects=[
             GTextBox((110, 9), (0, 0), "System info:", x=1, y=-1),
             GTextBox((110, 9), (10, 9), "Active since 6:00", x=1, y=-1),
