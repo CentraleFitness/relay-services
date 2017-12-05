@@ -37,7 +37,7 @@ class ThreadController():
         if isinstance(kwargs.get('factory', None), (list, tuple)):
             for t_args in kwargs['factory']:                   
                 id = self._get_id()
-                self.futures[id] = self.executor.submit(id, self, *t_args)
+                self.futures[id] = self.executor.submit(func, id, self, *t_args)
                 self.status[id] = ThreadStatus.RUNNING
         else:
             id = self._get_id()
@@ -133,11 +133,11 @@ if __name__ == "__main__":
         while True:
             start = time.time()
 
-            while not awaiting_input.empty():
-                input = awaiting_input.get()
+            while not c.queue.empty():
+                input = c.queue.get()
                 if input[1] == PBStatus.RELEASED:
                     display.interact(input[0])
-                awaiting_input.task_done()
+                c.queue.task_done()
 
             display.update_content()
             display.display_content()
