@@ -34,14 +34,14 @@ class ThreadController():
         return self.last_thread_id - 1
 
     def start(self, func, *args, **kwargs):
-        if isinstance(kwargs.get('chain', None), (list, tuple)):
-            for t_args in kwargs['chain']:                   
+        if isinstance(kwargs.get('factory', None), (list, tuple)):
+            for t_args in kwargs['factory']:                   
                 id = self._get_id()
-                self.futures[id] = self.executor.submit(id, *t_args)
+                self.futures[id] = self.executor.submit(id, self, *t_args)
                 self.status[id] = ThreadStatus.RUNNING
         else:
             id = self._get_id()
-            self.futures[id] = self.executor.submit(func, id, *args)
+            self.futures[id] = self.executor.submit(func, id, self, *args)
             self.status[id] = ThreadStatus.RUNNING
 
     def stop(self, thread_id):
@@ -52,18 +52,18 @@ class ThreadController():
             self.status[thread] = ThreadStatus.STOPPED
 
 
-def input_controller(input, queue, controller):
-    print("Thread started", flush=True)
+def input_controller(t_id, t_controller, input):
+    print("Thread started", flush=True) #DEBUG // SYSLOG
     if isinstance(input, Joystick):
-        while controller.running:
+        while t_controller.status[t_id] == ThreadStatus.RUNNING:
             for entry in input.get_inputs():
-                queue.put(entry)
+                t_controller.queue.put(entry)
             time.sleep(.05)
     elif isinstance(input, Pushbutton):
-        while controller.running:
+        while t_controller.status[t_id] == ThreadStatus.RUNNING:
             mem = input.get_status_update()
             if mem:
-                queue.put(mem)
+                t_controller.queue.put(mem)
             time.sleep(.05)
     
 
@@ -122,28 +122,26 @@ if __name__ == "__main__":
 
     display.content = menu1
 
-    awaiting_input = Queue()
+    c = ThreadController(max_workers=3)
+    c.start(input_controller, factory=
+            ((joy1, ),
+             (a_button, ),
+             (b_button, )))
 
-    c = ThreadController()
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        tasks = [
-            executor.submit(input_controller, controller, awaiting_input, c) \
-                for controller in (joy1, a_button, b_button)
-            ]
-        try:
-            while True:
-                start = time.time()
+    try:
+        while True:
+            start = time.time()
 
-                while not awaiting_input.empty():
-                    input = awaiting_input.get()
-                    if input[1] == PBStatus.RELEASED:
-                        display.interact(input[0])
-                    awaiting_input.task_done()
+            while not awaiting_input.empty():
+                input = awaiting_input.get()
+                if input[1] == PBStatus.RELEASED:
+                    display.interact(input[0])
+                awaiting_input.task_done()
 
-                display.update_content()
-                display.display_content()
-                print(time.time() - start)
-        except KeyboardInterrupt:
-            print(" Killin' the fun")
-            c.running = False
+            display.update_content()
+            display.display_content()
+            print(time.time() - start)
+    except KeyboardInterrupt:
+        print(" Killin' the fun")
+        c.stop_all()
