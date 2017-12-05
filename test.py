@@ -1,23 +1,20 @@
 import time
 import concurrent.futures
+
 from collections import defaultdict
 from enum import Enum
 from queue import Queue
-
-
-#if platform.system() == "Windows":
-#    print("Program running on windows")
-#else:
-
 from hardware.oled_128_64 import *
 from hardware.joystick import Joystick
 from hardware.pushbutton import Pushbutton, PBStatus
 from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
 
+
 class ThreadStatus(Enum):
     STOPPED = 0
     RUNNING = 1
+
 
 class ThreadController():
     def __init__(self, *args, **kwargs):
@@ -119,20 +116,15 @@ if __name__ == "__main__":
     menu2.parent = menu1
     menu3.parent = menu1
     menu4.parent = menu1
-
     display.content = menu1
 
     c = ThreadController(max_workers=3)
     c.start(input_controller, factory=
             ((joy1, ),
              (a_button, ),
-             (b_button, )))
-
-    
+             (b_button, )))    
     try:
         while True:
-            start = time.time()
-
             while not c.queue.empty():
                 input = c.queue.get()
                 if input[1] == PBStatus.RELEASED:
@@ -141,7 +133,6 @@ if __name__ == "__main__":
 
             display.update_content()
             display.display_content()
-            print(time.time() - start)
     except KeyboardInterrupt:
         print(" Killin' the fun")
         c.stop_all()

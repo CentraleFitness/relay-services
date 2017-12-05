@@ -1,13 +1,10 @@
-import platform
+from PIL import Image
 
-from PIL import Image, ImageDraw
-
-import Adafruit_GPIO.SPI as SPI
+#import Adafruit_GPIO.SPI as SPI
 import Adafruit_GPIO.I2C as I2C
 import Adafruit_SSD1306
 
-from objects.graphics.gcontainer import GContainer
-
+#from objects.graphics.gcontainer import GContainer
 
 SCREEN_SIZE = (128, 64)
 
