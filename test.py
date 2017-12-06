@@ -26,6 +26,9 @@ class ThreadController():
         self.queue = Queue()
         self.last_thread_id = 0x00
 
+    def __getitem__(self, item):
+        return self.status[item]
+
     def _get_id(self):
         self.last_thread_id += 1
         return self.last_thread_id - 1
