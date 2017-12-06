@@ -55,12 +55,12 @@ class ThreadController():
 def input_controller(t_id, t_controller, input):
     print("Thread started", flush=True) #DEBUG // SYSLOG
     if isinstance(input, Joystick):
-        while t_controller.status[t_id] == ThreadStatus.RUNNING:
+        while t_controller[t_id] == ThreadStatus.RUNNING:
             for entry in input.get_inputs():
                 t_controller.queue.put(entry)
             time.sleep(.05)
     elif isinstance(input, Pushbutton):
-        while t_controller.status[t_id] == ThreadStatus.RUNNING:
+        while t_controller[t_id] == ThreadStatus.RUNNING:
             mem = input.get_status_update()
             if mem:
                 t_controller.queue.put(mem)
