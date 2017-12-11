@@ -27,7 +27,7 @@ class GTextBox(TextBox):
         self.gx = kwargs.get('x', 0)
         self.gy = kwargs.get('y', 0)
         self.action = kwargs.get('action', defaultdict(tuple))
-        self.goto = None
+        #self.goto = None
         return super().__init__(*args, **kwargs)
 
     def action_on_click(self) -> tuple:

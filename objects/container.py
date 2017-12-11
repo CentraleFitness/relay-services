@@ -1,6 +1,5 @@
 from collections import defaultdict
 
-from .cursor import Cursor
 from .iterator import Iterator
 
 class Container(object):
