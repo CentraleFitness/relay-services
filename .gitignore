@@ -10,3 +10,5 @@ venv/
 /oled_server.pyproj
 /oled_server.sln
 *.user
+logs/*.log
+!logs/.log

@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     logger = logging.getLogger('oled')
     logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler('test.log')
+    fh = logging.FileHandler(('logs/{}_{}.log'.format(time.strftime("%y%m%d_%H%M%S"), 'test')))
     formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
     fh.setFormatter(formatter)
     logger.addHandler(fh)
