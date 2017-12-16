@@ -1,5 +1,8 @@
+import sys
 import time
 import concurrent.futures
+
+import logging
 
 from collections import defaultdict
 from enum import Enum
@@ -10,6 +13,7 @@ from hardware.pushbutton import Pushbutton, PBStatus
 from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
 
+from pid.pid import Pid
 
 class ThreadStatus(Enum):
     STOPPED = 0
@@ -67,7 +71,24 @@ def input_controller(t_id, t_controller, input):
             time.sleep(.05)
     
 
+    
+
 if __name__ == "__main__":
+
+    logger = logging.getLogger('oled')
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler('test.log')
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+            
+    onetime_program = Pid('oled')
+    if onetime_program.is_running():
+        logger.error('Program is already running')
+        sys.exit()
+    else:
+        logger.info('Program is starting')
+
     joy1 = Joystick()
     a_button = Pushbutton('A', 5)
     b_button = Pushbutton('B', 6)
@@ -139,3 +160,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print(" Killin' the fun")
         c.stop_all()
+        logger.info('Program terminated')

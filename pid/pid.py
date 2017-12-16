@@ -9,7 +9,7 @@ class Pid:
         self._pid = os.getpid()
         self._file = "{}/{}.pid".format(PID_DIR, name)
 
-    def get_is_running(self):
+    def is_running(self):
         try:
             with open(self._file, 'r') as file:
                 old_pid = int(file.read())
