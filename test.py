@@ -81,9 +81,13 @@ if __name__ == "__main__":
     logger = logging.getLogger('oled')
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(('logs/{}_{}.log'.format(time.strftime("%y%m%d_%H%M%S"), 'test')))
+    sh = logging.StreamHandler(sys.stdout)
+
     formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
     fh.setFormatter(formatter)
+    sh.setFormatter(formatter)
     logger.addHandler(fh)
+    logger.addHandler(sh)
             
     onetime_program = Pid('oled')
     if onetime_program.is_running():
