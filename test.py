@@ -2,7 +2,6 @@ import sys
 import time
 import logging
 from collections import defaultdict
-from enum import Enum
 
 from utils.thread import *
 from hardware.oled_128_64 import *
@@ -35,7 +34,9 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(('logs/{}_{}.log'.format(time.strftime("%y%m%d_%H%M%S"), 'test')))
     sh = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s', '%H:%M:%S')
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+    formatter.default_time_format = '%H:%M:%S'
+    formatter.default_msec_format = '%s.%03d'
     fh.setFormatter(formatter)
     sh.setFormatter(formatter)
     logger.addHandler(fh)

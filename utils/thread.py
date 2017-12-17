@@ -1,5 +1,6 @@
 import concurrent.futures
 from queue import Queue
+from enum import Enum
 
 
 class ThreadStatus(Enum):
