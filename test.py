@@ -165,6 +165,6 @@ if __name__ == "__main__":
             display.update_content()
             display.display_content()
     except KeyboardInterrupt:
-        print(" Killin' the fun")
+        logger.debug('Ctrl-c pressed')
         c.stop_all()
         logger.info('Program terminated')
