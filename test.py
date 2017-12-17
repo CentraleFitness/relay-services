@@ -1,94 +1,46 @@
 import sys
 import time
-import concurrent.futures
-
 import logging
-
 from collections import defaultdict
 from enum import Enum
-from queue import Queue
+
+from utils.thread import *
 from hardware.oled_128_64 import *
 from hardware.joystick import Joystick
 from hardware.pushbutton import Pushbutton, PBStatus
 from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
-
 from pid.pid import Pid
-
-class ThreadStatus(Enum):
-    STOPPED = 0
-    RUNNING = 1
-
-
-class ThreadController():
-    def __init__(self, *args, **kwargs):
-        self.workers = kwargs.get('max_workers', 3)
-        self.executor = concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.workers)
-        self.futures = dict()
-        self.status = dict()
-        self.queue = Queue()
-        self.last_thread_id = 0x00
-
-    def __getitem__(self, item):
-        return self.status[item]
-
-    def _get_id(self):
-        self.last_thread_id += 1
-        return self.last_thread_id - 1
-
-    def start(self, func, *args, **kwargs):
-        if isinstance(kwargs.get('factory', None), (list, tuple)):
-            for t_args in kwargs['factory']:                   
-                id = self._get_id()
-                self.futures[id] = self.executor.submit(func, id, self, *t_args)
-                self.status[id] = ThreadStatus.RUNNING
-        else:
-            id = self._get_id()
-            self.futures[id] = self.executor.submit(func, id, self, *args)
-            self.status[id] = ThreadStatus.RUNNING
-
-    def stop(self, thread_id):
-        self.status[thread_id] = ThreadStatus.STOPPED
-
-    def stop_all(self):
-        for thread in self.status:
-            self.status[thread] = ThreadStatus.STOPPED
 
 
 def input_controller(t_id, t_controller, input):
     ilogger = logging.getLogger('oled.input')
-    ilogger.debug("Thread started")
+    ilogger.debug("Thread {}: started".format(t_id))
     if isinstance(input, Joystick):
-        ilogger.debug("Joystick detected")
+        ilogger.debug("Listening: Joystick")
         while t_controller[t_id] == ThreadStatus.RUNNING:
             for entry in input.get_inputs():
                 t_controller.queue.put(entry)
             time.sleep(.05)
     elif isinstance(input, Pushbutton):
-        ilogger.debug("Button detected")
+        ilogger.debug("Listening: Button")
         while t_controller[t_id] == ThreadStatus.RUNNING:
             mem = input.get_status_update()
             if mem:
                 t_controller.queue.put(mem)
             time.sleep(.05)
-    
-
-    
 
 if __name__ == "__main__":
-
     logger = logging.getLogger('oled')
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(('logs/{}_{}.log'.format(time.strftime("%y%m%d_%H%M%S"), 'test')))
     sh = logging.StreamHandler(sys.stdout)
-
-    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s', '%H:%M:%S')
     fh.setFormatter(formatter)
     sh.setFormatter(formatter)
     logger.addHandler(fh)
     logger.addHandler(sh)
-            
+
     onetime_program = Pid('oled')
     if onetime_program.is_running():
         logger.error('Program is already running')
@@ -99,7 +51,6 @@ if __name__ == "__main__":
     joy1 = Joystick()
     a_button = Pushbutton('A', 5)
     b_button = Pushbutton('B', 6)
-
     display = Oled_128_64(content=None)
     menu2 = GContainer(
         SCREEN_SIZE,
