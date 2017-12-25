@@ -2,7 +2,10 @@ import sys
 import time
 import logging
 from collections import defaultdict
+import argparse
 
+
+from .config import *
 from utils.thread import *
 from hardware.oled_128_64 import *
 from hardware.joystick import Joystick
@@ -30,6 +33,30 @@ def input_controller(t_id, t_controller, input):
             time.sleep(.05)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="hotspot.py",
+                                     description="Start the bluetooth server")
+    parser.add_argument('--silent', dest="log_stdout", action='store_false')
+    local_log = parser.add_mutually_exclusive_group()
+    local_log.add_argument('--no-local-log',
+                           dest="log_folder",
+                           action='store_const',
+                           const=None,
+                           help='Disable the local trace of logs')
+    local_log.add_argument('-local-log',
+                           dest="log_folder",
+                           type=str,
+                           help='Defines the folder where the lof trace goes')
+    udp_log = parser.add_mutually_exclusive_group()
+    udp_log.add_argument('--no-udp-log',
+                         dest="log_udp",
+                         action='store_false')
+    udp_log.add_argument('-udp-log',
+                         dest="udp_host",
+                         type=str,
+                         nargs=2,
+                         metavar=('ip', 'port'))
+    args = parser.parse_args(sys.argv[1:])
+
     logger = logging.getLogger('oled')
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(('logs/{}_{}.log'.format(time.strftime("%y%m%d_%H%M%S"), 'test')))
