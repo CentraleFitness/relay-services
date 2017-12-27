@@ -1,4 +1,3 @@
-
 import sys
 import time
 import logging
@@ -13,7 +12,7 @@ from hardware.joystick import Joystick
 from hardware.pushbutton import Pushbutton, PBStatus
 from objects.graphics.gtextbox import *
 from objects.graphics.gcontainer import GContainer
-from pid.pid import Pid
+from utils.pid import Pid
 
 
 def input_controller(t_id, t_controller, input):
