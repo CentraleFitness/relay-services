@@ -1,3 +1,4 @@
+
 import sys
 import time
 import logging
@@ -5,7 +6,7 @@ from collections import defaultdict
 import argparse
 
 
-from .config import *
+from config import *
 from utils.thread import *
 from hardware.oled_128_64 import *
 from hardware.joystick import Joystick
@@ -72,8 +73,9 @@ if __name__ == "__main__":
     onetime_program = Pid('oled')
     if onetime_program.is_running():
         logger.error('Program is already running')
-        sys.exit()
+        sys.exit(1)
     else:
+        onetime_program.set_pidfile()
         logger.info('Program is starting')
 
     joy1 = Joystick()
