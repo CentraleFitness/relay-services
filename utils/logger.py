@@ -1,5 +1,7 @@
 import logging
+from logging import critical, error, warning, info, debug
 import time
+
 from .singleton import Singleton
 
 class Logger(object, metaclass=Singleton):
@@ -16,8 +18,6 @@ class Logger(object, metaclass=Singleton):
             }
         self.curr = kwargs.get('level', 'debug')
         self.handlers = list()
-        #self.log = logging.getLogger('oled')
-        #self.log.setLevel(level.get(kwargs.get('level', 'debug')))
         self.format = logging.Formatter(
             '[%(asctime)s][%(levelname)s] %(message)s')
         self.format.default_time_format = '%H:%M:%S'
@@ -25,11 +25,9 @@ class Logger(object, metaclass=Singleton):
         return super().__init__(**kwargs)
 
     def __add_handler_to_basicconfig(self, handler, new_level):
+        assert new_level in self.level.keys() and handler not in self.handlers
         self.handlers.append(handler)
-        try:
-            logging.basicConfig(handlers=self.handlers, level=self.level[new_level])
-        except Exception:
-            # DO something
+        logging.basicConfig(handlers=self.handlers, level=self.level[new_level])
 
     def add_file_handler(self, nameformat: str = "%y%m%d_%H%M%S",
                          destfolder: str = "./logs/", **kwargs):
@@ -42,16 +40,19 @@ class Logger(object, metaclass=Singleton):
         handler = logging.FileHandler(
             "{}/{}.log".format(destfolder, time.strftime(nameformat)))
         handler.setFormatter(self.format)
-        #self.log.addHandler(handler)
-        self.__add_handler_to_basicconfig(handler, kwargs.get('level', self.curr))
-        self.handlers.append(handler)
-        logging.basicConfig(handlers=self.handlers, level=self.level[self.curr])
+        self.__add_handler_to_basicconfig(
+            handler, kwargs.get('level', self.curr))
 
-
-    def add_stream_handler(self, stream):
+    def add_stream_handler(self, stream, **kwargs):
+        """
+        Add a stream to output the logs
+        kwargs:
+            level: update the logging level of the program
+        """
         handler = logging.StreamHandler(stream)
         handler.setFormatter(self.format)
-        #self.logger.addHandler(handler)
+        self.__add_handler_to_basicconfig(
+            handler, kwargs.get('level', self.curr))
 
     def add_udp_handler(self, host):
         # TODO
