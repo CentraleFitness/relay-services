@@ -7,6 +7,7 @@ import argparse
 
 from config import *
 from utils.thread import *
+import utils.logger as logger
 from hardware.oled_128_64 import *
 from hardware.joystick import Joystick
 from hardware.pushbutton import Pushbutton, PBStatus
@@ -57,17 +58,9 @@ if __name__ == "__main__":
                          metavar=('ip', 'port'))
     args = parser.parse_args(sys.argv[1:])
 
-    logger = logging.getLogger('oled')
-    logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler(('logs/{}_{}.log'.format(time.strftime("%y%m%d_%H%M%S"), 'test')))
-    sh = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
-    formatter.default_time_format = '%H:%M:%S'
-    formatter.default_msec_format = '%s.%03d'
-    fh.setFormatter(formatter)
-    sh.setFormatter(formatter)
-    logger.addHandler(fh)
-    logger.addHandler(sh)
+    log = logger.Logger(level='debug')
+    log.add_file_handler()
+    log.add_stream_handler(sys.stdout)
 
     onetime_program = Pid('oled')
     if onetime_program.is_running():
