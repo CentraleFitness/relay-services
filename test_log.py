@@ -1,5 +1,7 @@
 #import sys
 #import logging
+import time
+import logging.handlers
 
 #if __name__ == "__main__":
 #    sh = logging.StreamHandler(sys.stdout)
@@ -19,5 +21,15 @@ if __name__ == "__main__":
     log = logger.Logger()
     #log.add_file_handler('test', './logs/')
     log.add_stream_handler(sys.stdout)
-    log.add_udp_handler('127.0.1.1', 5544)
-    logger.debug('test')
+    log.add_udp_handler('192.168.254.35', 5544)
+    try:
+        logging.critical("critical log")
+        logging.error("error log")
+        logging.warning("warning log")
+        logging.info("info log")
+        logging.debug("debug log")
+        for i in range(10):
+            time.sleep(1)
+            logger.debug(i)
+    except KeyboardInterrupt:
+        logger.warning('execution stopped')

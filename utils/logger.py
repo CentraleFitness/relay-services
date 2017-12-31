@@ -69,8 +69,9 @@ class Logger(object, metaclass=Singleton):
 
     def add_udp_handler(self, host, port, **kwargs):
         handler = logging.handlers.DatagramHandler(host, port)
+        handler.setLevel(logging.DEBUG)
         handler.setFormatter(self.format)
-        handler.send("Hello World!".encode())
-        self.__add_handler_to_basicconfig(
-            handler, kwargs.get('level', self.curr))
-        pass
+        #handler.send("Hi".encode())
+        logging.getLogger().addHandler(handler)
+        #self.__add_handler_to_basicconfig(
+        #    handler, kwargs.get('level', self.curr))
