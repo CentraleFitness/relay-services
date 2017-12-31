@@ -17,6 +17,7 @@ import utils.logger as logger
 
 if __name__ == "__main__":
     log = logger.Logger()
-    log.add_file_handler('test', './logs/')
+    #log.add_file_handler('test', './logs/')
     log.add_stream_handler(sys.stdout)
+    log.add_udp_handler('127.0.1.1', 5544)
     logger.debug('test')

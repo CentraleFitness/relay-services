@@ -1,4 +1,5 @@
 import logging
+import logging.handlers
 from logging import critical, error, warning, info, debug
 import time
 
@@ -66,6 +67,10 @@ class Logger(object, metaclass=Singleton):
         self.__add_handler_to_basicconfig(
             handler, kwargs.get('level', self.curr))
 
-    def add_udp_handler(self, host):
-        # TODO
+    def add_udp_handler(self, host, port, **kwargs):
+        handler = logging.handlers.DatagramHandler(host, port)
+        handler.setFormatter(self.format)
+        handler.send("Hello World!".encode())
+        self.__add_handler_to_basicconfig(
+            handler, kwargs.get('level', self.curr))
         pass
