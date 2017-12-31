@@ -1,7 +1,10 @@
 import socket
 import time
-UDP_IP = '127.0.1.1'
-UDP_PORT = 5544
+import sys
+import pickle
+
+UDP_IP = sys.argv[1]
+UDP_PORT = int(sys.argv[2])
 
 sock = socket.socket(socket.AF_INET,
                      socket.SOCK_DGRAM)
@@ -10,9 +13,8 @@ try:
     print('socket binded')
 
     while True:
-        data, addr = sock.recv(1024)
-        print(data)
-        time.sleep(0.1)
+        data, addr = sock.recvfrom(1024)
+        print(pickle.loads(data))
 
 except KeyboardInterrupt:
     print('stop')
