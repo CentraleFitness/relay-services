@@ -39,6 +39,7 @@ class Logger(object, metaclass=Singleton):
         """
         Run the basic config command
         """
+        assert self.level in LEVEL_DICT.keys()
         logging.basicConfig(handler=self.handlers, level=LEVEL_DICT[self.level])
 
     def __add_handler_to_basicconfig(self, handler, new_level):
