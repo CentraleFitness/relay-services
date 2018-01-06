@@ -1,7 +1,6 @@
 #import sys
 #import logging
 import time
-import logging.handlers
 
 #if __name__ == "__main__":
 #    sh = logging.StreamHandler(sys.stdout)
@@ -19,16 +18,17 @@ import utils.logger as logger
 
 if __name__ == "__main__":
     log = logger.Logger()
-    #log.add_file_handler('test', './logs/')
+    log.level = 'debug'
     log.add_stream_handler(sys.stdout)
-    log.add_udp_handler('192.168.254.35', 5544)
+    log.add_syslog_handler('/dev/log')
+    log.set_config()
     try:
-        logging.critical("critical log")
-        logging.error("error log")
-        logging.warning("warning log")
-        logging.info("info log")
-        logging.debug("debug log")
-        for i in range(10):
+        logger.critical("critical log")
+        logger.error("error log")
+        logger.warning("warning log")
+        logger.info("info log")
+        logger.debug("debug log")
+        for i in range(100):
             time.sleep(1)
             logger.debug(i)
     except KeyboardInterrupt:

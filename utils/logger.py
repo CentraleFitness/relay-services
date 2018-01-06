@@ -5,6 +5,17 @@ import time
 
 from .singleton import Singleton
 
+SYSLOG_ADDR = ('localhost', logging.handlers.SYSLOG_UDP_PORT)
+
+LEVEL_DICT = {
+    'critical': logging.CRITICAL,
+    'error': logging.ERROR,
+    'warning': logging.WARNING,
+    'info': logging.INFO,
+    'debug': logging.DEBUG,
+    'notset': logging.NOTSET
+    }
+
 class Logger(object, metaclass=Singleton):
     """description of class"""
 
@@ -16,15 +27,7 @@ class Logger(object, metaclass=Singleton):
         A level of debug is determined by: 'critical', 'error',
         'warning', 'info', 'debug', 'notset' from the most import to the least
         """
-        self.level = {
-            'critical': logging.CRITICAL,
-            'error': logging.ERROR,
-            'warning': logging.WARNING,
-            'info': logging.INFO,
-            'debug': logging.DEBUG,
-            'notset': logging.NOTSET
-            }
-        self.curr = kwargs.get('level', 'debug')
+        self.level = kwargs.get('level', 'debug')
         self.handlers = list()
         self.format = logging.Formatter(
             '[%(asctime)s][%(levelname)s] %(message)s')
@@ -32,15 +35,21 @@ class Logger(object, metaclass=Singleton):
         self.format.default_msec_format = '%s.%03d'
         return super().__init__(**kwargs)
 
+    def set_config(self):
+        """
+        Run the basic config command
+        """
+        logging.basicConfig(handler=self.handlers, level=LEVEL_DICT[self.level])
+
     def __add_handler_to_basicconfig(self, handler, new_level):
         """
         Add the handler to the list of active ones and call basicConfig()
         Assertion is made when the handler is already in the list or
         the new level set does not exist
         """
-        assert new_level in self.level.keys() and handler not in self.handlers
+        assert new_level in LEVEL_DICT.keys() and handler not in self.handlers
         self.handlers.append(handler)
-        logging.basicConfig(handlers=self.handlers, level=self.level[new_level])
+        logging.basicConfig(handlers=self.handlers, level=LEVEL_DICT[new_level])
 
     def add_file_handler(self,  destfolder: str = "./logs/",
                          nameformat: str = "%y%m%d_%H%M%S", **kwargs):
@@ -52,9 +61,10 @@ class Logger(object, metaclass=Singleton):
         """
         handler = logging.FileHandler(
             "{}/{}.log".format(destfolder, time.strftime(nameformat)))
+        handler.setLevel(logging.DEBUG)
         handler.setFormatter(self.format)
-        self.__add_handler_to_basicconfig(
-            handler, kwargs.get('level', self.curr))
+        #self.__add_handler_to_basicconfig(
+        #    handler, kwargs.get('level', self.level))
 
     def add_stream_handler(self, stream, **kwargs):
         """
@@ -63,15 +73,34 @@ class Logger(object, metaclass=Singleton):
             level: update the logging level of the program
         """
         handler = logging.StreamHandler(stream)
+        handler.setLevel(logging.DEBUG)
         handler.setFormatter(self.format)
-        self.__add_handler_to_basicconfig(
-            handler, kwargs.get('level', self.curr))
+        #self.__add_handler_to_basicconfig(
+        #    handler, kwargs.get('level', self.level))
 
     def add_udp_handler(self, host, port, **kwargs):
+        """
+        Deprecated
+        """
         handler = logging.handlers.DatagramHandler(host, port)
         handler.setLevel(logging.DEBUG)
         handler.setFormatter(self.format)
         #handler.send("Hi".encode())
-        logging.getLogger().addHandler(handler)
+        #logging.getLogger().addHandler(handler)
         #self.__add_handler_to_basicconfig(
         #    handler, kwargs.get('level', self.curr))
+
+    def add_syslog_handler(self, address=SYSLOG_ADDR, **kwargs):
+        """
+        Add a SysLogHandler to the log output
+        The basic UDP socket is used for the communication
+        args:
+            address: a tuple representing (host, port) or a string '/dev/log'
+        kwargs:
+            level: update the logging level of the program
+        """
+        handler = logging.handlers.SysLogHandler(address=address)
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(self.format)
+        #self.__add_handler_to_basicconfig(
+        #    handler, kwargs.get('level', self.level))
