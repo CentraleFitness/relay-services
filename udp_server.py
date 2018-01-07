@@ -14,7 +14,7 @@ try:
 
     while True:
         data, addr = sock.recvfrom(1024)
-        print(pickle.loads(data))
+        print(data)
 
 except KeyboardInterrupt:
     print('stop')

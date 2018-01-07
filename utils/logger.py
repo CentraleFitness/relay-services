@@ -40,7 +40,7 @@ class Logger(object, metaclass=Singleton):
         Run the basic config command
         """
         assert self.level in LEVEL_DICT.keys()
-        logging.basicConfig(handler=self.handlers, level=LEVEL_DICT[self.level])
+        logging.basicConfig(handlers=self.handlers, level=LEVEL_DICT[self.level])
 
     def __add_handler_to_basicconfig(self, handler, new_level):
         """
@@ -76,6 +76,7 @@ class Logger(object, metaclass=Singleton):
         handler = logging.StreamHandler(stream)
         handler.setLevel(logging.DEBUG)
         handler.setFormatter(self.format)
+        self.handlers.append(handler)
         #self.__add_handler_to_basicconfig(
         #    handler, kwargs.get('level', self.level))
 
@@ -103,5 +104,6 @@ class Logger(object, metaclass=Singleton):
         handler = logging.handlers.SysLogHandler(address=address)
         handler.setLevel(logging.DEBUG)
         handler.setFormatter(self.format)
+        self.handlers.append(handler)
         #self.__add_handler_to_basicconfig(
         #    handler, kwargs.get('level', self.level))
