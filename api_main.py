@@ -3,6 +3,7 @@ import requests
 import random
 import argparse
 
+# Create file config/master.py following template.py in the same folder
 from config.master import *
 
 class Dynamo:
@@ -31,14 +32,14 @@ class BluetoothHandler:
 
 class ClientHandler:
     def __init__(self, api_key):
-        self.url = SERVER_URL
+        self.base_url = SERVER_URL
         self.api_key = api_key
         self.timeout = 1
 
     def get_module_id(self, mlists: list) -> dict:
         try:
             resp = requests.post(
-                self.url,
+                "{}{}".format(self.base_url, "getModuleID/"),
                 json=
                 {
                     'api_key': self.api_key,
@@ -57,8 +58,25 @@ class ClientHandler:
         if isinstance(jresp["id"], dict):
             return jresp["id"]
 
-    def module_send_production(self, prod_d: dict):
-        return None
+    def module_send_production(self, prod_d: dict) -> dict:
+        try:
+            resp = requests.post(
+                "{}{}".format(self.base_url, "moduleSendProduction/"),
+                json=
+                {
+                    "api_key": self.api_key,
+                    "production": prod_d
+                },
+                timeout=self.timeout)
+            resp.raise_for_status()
+        except Exception:
+            print("Something happened")
+            return None
+        if jresp["status"] == "ko":
+            ## Handle that error
+            print(jresp["reason"])
+            return None
+        return jresp["tasks"]
 
 
 def random_range(floor: float, ceil: float, point: int) -> float:
@@ -80,13 +98,13 @@ if __name__ == "__main__":
                         action='store',
                         default=2)
     args = parser.parse_args()
-    client = ClientHandler("0001-2083-a4b2-c00f")
+    client = ClientHandler(API_KEY)
     modules = [
         Dynamo(address, uuid) for address, uuid in
         ((0x2, "001:001:001"), (0x3, "001:001:002"))
         ]
 
-    print("POST /getModuleId")
+    print("POST .../getModuleId/")
     id_dict = client.get_module_id((dynamo.uuid for dynamo in modules))
     for dynamo in modules:
         if dynamo.uuid in id_dict:
@@ -96,6 +114,7 @@ if __name__ == "__main__":
         else:
             print("missing session_id for module {}".format(dynamo.uuid))
 
+    print("POST .../moduleSendProduction/")
     execution = True
     prod_d = dict()
     while execution:
@@ -104,4 +123,9 @@ if __name__ == "__main__":
             dynamo.t_prod.append(
                 random_range(args.range[0], args.range[1], args.point))
             prod_d[dynamo.session_id] = dynamo.prod_sum()
-        client.module_send_production(prod_d)
+        ret = client.module_send_production(prod_d)
+        if ret is None:
+            execution = False
+        else:
+            ## Do something
+            pass
