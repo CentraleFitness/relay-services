@@ -1,4 +1,8 @@
+import sys
 import requests
+import random
+import argparse
+
 from config.master import *
 
 class Dynamo:
@@ -26,17 +30,18 @@ class BluetoothHandler:
 
 
 class ClientHandler:
-    def __init__(self):
+    def __init__(self, api_key):
         self.url = SERVER_URL
+        self.api_key = api_key
         self.timeout = 1
 
-    def get_module_id(self, api_key: str, mlists: list) -> dict:
+    def get_module_id(self, mlists: list) -> dict:
         try:
             resp = requests.post(
                 self.url,
                 json=
                 {
-                    'api_key': api_key,
+                    'api_key': self.api_key,
                     'uuid': mlists
                 },
                 timeout=self.timeout)
@@ -52,18 +57,37 @@ class ClientHandler:
         if isinstance(jresp["id"], dict):
             return jresp["id"]
 
+    def module_send_production(self, prod_d: dict):
+        return None
+
+
+def random_range(floor: float, ceil: float, point: int) -> float:
+    return round(random.uniform(floor, ceil), point)
         
 if __name__ == "__main__":
-    client = ClientHandler()
+    random.seed()
+    parser = argparse.ArgumentParser(description="API communication experiment")
+    parser.add_argument('--range',
+                        help="Production range (in Watt)",
+                        nargs=2,
+                        metavar=('min', 'max'),
+                        type=float,
+                        action='store',
+                        default=(1, 5))
+    parser.add_argument('--point',
+                        help="Number of digits after the floating point",
+                        type=int,
+                        action='store',
+                        default=2)
+    args = parser.parse_args()
+    client = ClientHandler("0001-2083-a4b2-c00f")
     modules = [
         Dynamo(address, uuid) for address, uuid in
         ((0x2, "001:001:001"), (0x3, "001:001:002"))
         ]
 
-    api_key = "0001-2083-a4b2-c00f"
-
     print("POST /getModuleId")
-    id_dict = client.get_module_id(api_key, (dynamo.uuid for dynamo in modules))
+    id_dict = client.get_module_id((dynamo.uuid for dynamo in modules))
     for dynamo in modules:
         if dynamo.uuid in id_dict:
             dynamo.session_id = id_dict[dynamo.uuid]
@@ -72,3 +96,12 @@ if __name__ == "__main__":
         else:
             print("missing session_id for module {}".format(dynamo.uuid))
 
+    execution = True
+    prod_d = dict()
+    while execution:
+        prod_d.clear()
+        for dynamo in modules:
+            dynamo.t_prod.append(
+                random_range(args.range[0], args.range[1], args.point))
+            prod_d[dynamo.session_id] = dynamo.prod_sum()
+        client.module_send_production(prod_d)
