@@ -129,7 +129,7 @@ if __name__ == "__main__":
     while execution:
         prod_d.clear()
         for dynamo in modules:
-            dynamo.t_prod.add(
+            dynamo.add_prod(
                 random_range(args.range[0], args.range[1], args.point))
             prod_d[dynamo.session_id] = dynamo.prod_sum()
         ret = client.module_send_production(prod_d)
