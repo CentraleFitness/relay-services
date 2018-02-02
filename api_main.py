@@ -2,22 +2,31 @@ import sys
 import requests
 import random
 import argparse
+import threading
 
 # Create file config/master.py following template.py in the same folder
 from config.master import *
 
 class Dynamo:
     def __init__(self, address, uuid, **kwargs):
+        self.mutex = threading.Lock()
         self.address = address
         self.uuid = uuid
         self.session_id = None
-        self.t_prod = list()
+        self.t_prod = set()
         return super().__init__(**kwargs)
 
     def prod_sum(self) -> float:
+        self.mutex.acquire(blocking=True)
         mem =  sum(self.t_prod)
         self.t_prod.clear()
+        self.mutex.release()
         return mem
+
+    def add_prod(self, prod: float) -> None:
+        self.mutex.acquire(blocking=True)
+        self.t_prod.add(prod)
+        self.mutex.release()
 
 
 class BluetoothHandler:
@@ -120,7 +129,7 @@ if __name__ == "__main__":
     while execution:
         prod_d.clear()
         for dynamo in modules:
-            dynamo.t_prod.append(
+            dynamo.t_prod.add(
                 random_range(args.range[0], args.range[1], args.point))
             prod_d[dynamo.session_id] = dynamo.prod_sum()
         ret = client.module_send_production(prod_d)
