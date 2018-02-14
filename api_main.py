@@ -39,15 +39,15 @@ class ClientHandler:
     def get_module_id(self, mlists: list) -> dict:
         try:
             resp = requests.post(
-                "{}{}".format(self.base_url, "getModuleID/"),
+                "{}{}".format(self.base_url, "module/get/ids"),
                 json=
                 {
-                    'api_key': self.api_key,
-                    'uuid': mlists
+                    'apiKey': self.api_key,
+                    'UUID': mlists
                 },
                 timeout=self.timeout)
             resp.raise_for_status()
-        except Exception:
+        except Exception as ex:
             print("Something happened")
             return None
         jresp = resp.json()
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         ]
 
     print("POST .../getModuleId/")
-    id_dict = client.get_module_id((dynamo.uuid for dynamo in modules))
+    id_dict = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
     for dynamo in modules:
         if dynamo.uuid in id_dict:
             dynamo.session_id = id_dict[dynamo.uuid]
