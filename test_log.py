@@ -1,12 +1,17 @@
 import sys
 import time
 import utils.logger as logger
+import graypy
 
 if __name__ == "__main__":
     log = logger.Logger()
     log.level = 'debug'
+
+    handler = graypy.GELFHandler('163.5.84.201', 5544)
+    log.handlers.append(handler)
+
     log.add_stream_handler(sys.stdout)
-    log.add_syslog_handler('/dev/log')
+    #log.add_syslog_handler('/dev/log')
     log.set_config()
     try:
         logger.critical("critical log")
