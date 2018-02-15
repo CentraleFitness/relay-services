@@ -60,17 +60,20 @@ class ClientHandler:
             print("Something happened")
             return None
         jresp = resp.json()
-        if jresp["status"] == "ko":
-            ## Handle that error
-            print(jresp["reason"])
+        #if jresp["status"] == "ko":
+        #    ## Handle that error
+        #    print(jresp["reason"])
+        #    return None
+        #if isinstance(jresp["id"], dict):
+        #    return jresp["id"]
+        if jresp["code"] != "GENERIC_OK":
             return None
-        if isinstance(jresp["id"], dict):
-            return jresp["id"]
+        return jresp["moduleIDS"]
 
     def module_send_production(self, prod_d: dict) -> dict:
         try:
             resp = requests.post(
-                "{}{}".format(self.base_url, "moduleSendProduction/"),
+                "{}{}".format(self.base_url, "module/production/send"),
                 json=
                 {
                     "api_key": self.api_key,
@@ -78,7 +81,7 @@ class ClientHandler:
                 },
                 timeout=self.timeout)
             resp.raise_for_status()
-        except Exception:
+        except Exception as ex:
             print("Something happened")
             return None
         if jresp["status"] == "ko":
@@ -114,14 +117,18 @@ if __name__ == "__main__":
         ]
 
     print("POST .../getModuleId/")
-    id_dict = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
-    for dynamo in modules:
-        if dynamo.uuid in id_dict:
-            dynamo.session_id = id_dict[dynamo.uuid]
-            print("uuid: {}, session_id {}".format(dynamo.uuid,
-                                                   dynamo.session_id))
-        else:
-            print("missing session_id for module {}".format(dynamo.uuid))
+    #id_dict = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
+    #for dynamo in modules:
+    #    if dynamo.uuid in id_dict:
+    #        dynamo.session_id = id_dict[dynamo.uuid]
+    #        print("uuid: {}, session_id {}".format(dynamo.uuid,
+    #                                               dynamo.session_id))
+    #    else:
+    #        print("missing session_id for module {}".format(dynamo.uuid))
+    id_list = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
+    for it, dynamo in enumerate(modules):
+        dynamo.session_id = id_list[it]
+        print("uuid: {}, session_id {}".format(dynamo.uuid, dynamo.session_id))
 
     print("POST .../moduleSendProduction/")
     execution = True
@@ -136,5 +143,6 @@ if __name__ == "__main__":
         if ret is None:
             execution = False
         else:
+            print(ret)
             ## Do something
             pass
