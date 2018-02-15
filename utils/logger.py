@@ -1,6 +1,7 @@
 import logging
 import logging.handlers
 from logging import critical, error, warning, info, debug
+import graypy
 import time
 
 from .singleton import Singleton
@@ -24,8 +25,9 @@ class Logger(object, metaclass=Singleton):
         Initialise a Logger class. This is a singleton so it instanciate
         only once.
         A default formatter is set for every handlers.
-        A level of debug is determined by: 'critical', 'error',
-        'warning', 'info', 'debug', 'notset' from the most import to the least
+        A level of debug is determined by:
+            'critical', 'error', 'warning', 'info', 'debug', 'notset'
+            (from the most import to the least)
         """
         self.level = kwargs.get('level', 'debug')
         self.handlers = list()
@@ -36,18 +38,8 @@ class Logger(object, metaclass=Singleton):
         self.__set = False
         return super().__init__(**kwargs)
 
-    def __add_handler_to_basicconfig(self, handler, new_level) -> None:
-        """
-        Add the handler to the list of active ones and call basicConfig()
-        Assertion is made when the handler is already in the list or
-        the new level set does not exist
-        """
-        assert new_level in LEVEL_DICT.keys() and handler not in self.handlers
-        self.handlers.append(handler)
-        logging.basicConfig(handlers=self.handlers, level=LEVEL_DICT[new_level])
-
     def _handler_factory(self, handlertype, *args, **kwargs) -> logging.Handler:
-        handler = handlertype(*args)
+        handler = handlertype(*args, **kwargs)
         handler.setLevel(LEVEL_DICT[kwargs.get('level', 'notset')])
         handler.setFormatter(self.format)
         return handler
@@ -108,3 +100,19 @@ class Logger(object, metaclass=Singleton):
         self.handlers.append(self._handler_factory(
             logging.handlers.SysLogHandler,
             address=address, **kwargs))
+
+    def add_gelf_handler(self, host: str, port: int, **kwargs) -> None:
+        """
+        Add a GELF Handler to the log output
+        GELF stands for Graylog Extended Log Format
+        args:
+            host: IP or domain name of the server
+            port: The port which the GELF input in Graylog is listening to
+        kwargs:
+            level: set the logging level of this specific handler
+        """
+        self.handlers.append(
+            self._handler_factory(
+                graypy.GELFHandler,
+                host, port,
+                **kwargs))
