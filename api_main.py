@@ -76,7 +76,7 @@ class ClientHandler:
                 "{}{}".format(self.base_url, "module/production/send"),
                 json=
                 {
-                    "api_key": self.api_key,
+                    "apiKey": self.api_key,
                     "production": prod_d
                 },
                 timeout=self.timeout)
@@ -84,12 +84,14 @@ class ClientHandler:
         except Exception as ex:
             print("Something happened")
             return None
-        if jresp["status"] == "ko":
-            ## Handle that error
-            print(jresp["reason"])
+        jresp = resp.json()
+        if jresp["code"] != "GENERIC_OK":
             return None
-        return jresp["tasks"]
-
+        #if jresp["status"] == "ko":
+        #    ## Handle that error
+        #    print(jresp["reason"])
+        #    return None
+        return prod_d
 
 def random_range(floor: float, ceil: float, point: int) -> float:
     return round(random.uniform(floor, ceil), point)
@@ -115,7 +117,6 @@ if __name__ == "__main__":
         Dynamo(address, uuid) for address, uuid in
         ((0x2, "001:001:001"), (0x3, "001:001:002"))
         ]
-
     print("POST .../getModuleId/")
     #id_dict = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
     #for dynamo in modules:
@@ -129,7 +130,6 @@ if __name__ == "__main__":
     for it, dynamo in enumerate(modules):
         dynamo.session_id = id_list[it]
         print("uuid: {}, session_id {}".format(dynamo.uuid, dynamo.session_id))
-
     print("POST .../moduleSendProduction/")
     execution = True
     prod_d = dict()
