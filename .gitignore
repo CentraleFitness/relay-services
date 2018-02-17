@@ -12,3 +12,4 @@ venv/
 *.user
 logs/*.log
 !logs/.log
+/config/master.py
