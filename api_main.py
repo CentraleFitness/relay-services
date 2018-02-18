@@ -1,9 +1,11 @@
 import sys
 import random
 import argparse
+import time
 
 # Create file config/master.py following template.py in the same folder
 from config.master import *
+import utils.logger as logger
 from hardware.dynamo import Dynamo
 from network.client_handler import ClientHandler
 
@@ -26,7 +28,21 @@ if __name__ == "__main__":
                         type=int,
                         action='store',
                         default=2)
+    parser.add_argument('-silent',
+                        help="Silent the log on the standard output",
+                        action="store_true")
+    parser.add_argument('--level',
+                        help="Debug level",
+                        type=str,
+                        action='store',
+                        default='warning')
     args = parser.parse_args()
+    log = logger.Logger()
+    log.level = args.level
+    log.add_gelf_handler(SERVER_IP,
+                         GELF_INPUT_PORT,
+                         localname="cf-hotspot-003",
+                         debugging_fields=False)
     client = ClientHandler(API_KEY)
     modules = [
         Dynamo(address, uuid) for address, uuid in
@@ -56,6 +72,7 @@ if __name__ == "__main__":
             prod_d[dynamo.uuid] = dynamo.prod_sum()
         print(prod_d)
         ret = client.module_send_production(prod_d)
+        time.sleep(1)
         if ret is None:
             execution = False
         else:
