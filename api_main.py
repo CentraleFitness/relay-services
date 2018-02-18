@@ -13,25 +13,25 @@ from network.client_handler import ClientHandler
 def random_range(floor: float, ceil: float, point: int) -> float:
     return round(random.uniform(floor, ceil), point)
         
-if __name__ == "__main__":
+def main():
     random.seed()
     parser = argparse.ArgumentParser(description="API communication experiment")
-    parser.add_argument('--range',
+    parser.add_argument('--range', '-r',
                         help="Production range (in Watt)",
                         nargs=2,
                         metavar=('min', 'max'),
                         type=float,
                         action='store',
                         default=(1, 5))
-    parser.add_argument('--point',
+    parser.add_argument('--point', '-p',
                         help="Number of digits after the floating point",
                         type=int,
                         action='store',
                         default=2)
-    parser.add_argument('-silent',
+    parser.add_argument('--silent', '-s',
                         help="Silent the log on the standard output",
                         action="store_true")
-    parser.add_argument('--level',
+    parser.add_argument('--level', '-l',
                         help="Debug level",
                         type=str,
                         action='store',
@@ -41,14 +41,16 @@ if __name__ == "__main__":
     log.level = args.level
     log.add_gelf_handler(SERVER_IP,
                          GELF_INPUT_PORT,
-                         localname="cf-hotspot-003",
-                         debugging_fields=False)
+                         localname="cf-hotspot-003")
+    if not args.silent:
+        log.add_stream_handler(sys.stdout)
+    log.set_config()
     client = ClientHandler(API_KEY)
     modules = [
         Dynamo(address, uuid) for address, uuid in
         ((0x2, "001:001:001"), (0x3, "001:001:002"))
         ]
-    print("POST .../module/get/ids")
+    logger.info("Program started")
     #id_dict = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
     #for dynamo in modules:
     #    if dynamo.uuid in id_dict:
@@ -58,10 +60,12 @@ if __name__ == "__main__":
     #    else:
     #        print("missing session_id for module {}".format(dynamo.uuid))
     id_list = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
+    if not id_list:
+        logger.critical("Empty module ids. Execution stop.")
+        return 1
     for it, dynamo in enumerate(modules):
         dynamo.session_id = id_list[it]
-        print("uuid: {}, session_id {}".format(dynamo.uuid, dynamo.session_id))
-    print("POST .../module/production/send")
+    logger.info("Initialisation done. Send production NOW.")
     execution = True
     prod_d = dict()
     while execution:
@@ -70,7 +74,7 @@ if __name__ == "__main__":
             dynamo.add_prod(
                 random_range(args.range[0], args.range[1], args.point))
             prod_d[dynamo.uuid] = dynamo.prod_sum()
-        print(prod_d)
+        logger.debug(prod_d)
         ret = client.module_send_production(prod_d)
         time.sleep(1)
         if ret is None:
@@ -82,5 +86,15 @@ if __name__ == "__main__":
                         for dynamo in modules:
                             if dynamo.uuid == param['UUID']:
                                 dynamo.session_id = param["moduleID"]
-            ## Do something
-            pass
+    return 0
+
+if __name__ == "__main__":
+    ret = main()
+    if ret == 0:
+        logger.info("Program stopped without any problem")
+    else:
+        logger.critical(
+            """
+            An error occured and cause the program to stop.
+            Return code {}
+            """.format(ret))

@@ -5,6 +5,7 @@
 """
 
 import requests
+import utils.logger as logger
 
 from config.master import *
 
@@ -33,7 +34,7 @@ class ClientHandler:
                 timeout=self.timeout)
             resp.raise_for_status()
         except Exception as ex:
-            print("Something happened")
+            logger.error("Exception handled: {}".format(ex))
             return None
         jresp = resp.json()
         #if jresp["status"] == "ko":
@@ -43,6 +44,7 @@ class ClientHandler:
         #if isinstance(jresp["id"], dict):
         #    return jresp["id"]
         if jresp["code"] != "GENERIC_OK":
+            logger.error("KO: Error code {}".format(jresp['code']))
             return None
         return jresp["moduleIDS"]
 
@@ -58,10 +60,11 @@ class ClientHandler:
                 timeout=self.timeout)
             resp.raise_for_status()
         except Exception as ex:
-            print("Something happened")
+            logger.error("Exception handled: {}".format(ex))
             return None
         jresp = resp.json()
         if jresp["code"] != "GENERIC_OK":
+            logger.error("KO: Error code {}".format(jresp['code']))
             return None
         return jresp.get("commande", [])
         #if jresp["status"] == "ko":
