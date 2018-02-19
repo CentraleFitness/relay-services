@@ -20,7 +20,7 @@ class ClientHandler:
         """
         self.base_url = SERVER_URL
         self.api_key = api_key
-        self.timeout = 1
+        self.timeout = 30
 
     def get_module_id(self, mlists: list) -> dict:
         try:

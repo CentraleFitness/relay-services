@@ -39,9 +39,7 @@ def main():
     args = parser.parse_args()
     log = logger.Logger()
     log.level = args.level
-    log.add_gelf_handler(SERVER_IP,
-                         GELF_INPUT_PORT,
-                         localname="cf-hotspot-003")
+    log.add_gelf_handler(SERVER_IP, GELF_INPUT_PORT)
     if not args.silent:
         log.add_stream_handler(sys.stdout)
     log.set_config()
