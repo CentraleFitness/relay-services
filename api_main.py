@@ -5,7 +5,7 @@ import time
 
 # Create file config/master.py following template.py in the same folder
 from config.master import *
-import utils.logger as logger
+import utils.logger as mlogger
 from hardware.dynamo import Dynamo
 from network.client_handler import ClientHandler
 
@@ -28,21 +28,9 @@ def main():
                         type=int,
                         action='store',
                         default=2)
-    parser.add_argument('--silent', '-s',
-                        help="Silent the log on the standard output",
-                        action="store_true")
-    parser.add_argument('--level', '-l',
-                        help="Debug level",
-                        type=str,
-                        action='store',
-                        default='warning')
     args = parser.parse_args()
-    log = logger.Logger()
-    log.level = args.level
-    log.add_gelf_handler(SERVER_IP, GELF_INPUT_PORT)
-    if not args.silent:
-        log.add_stream_handler(sys.stdout)
-    log.set_config()
+    mlogger.dict_config(LOGGING_DICT)
+    logger = mlogger.get_logger(__name__)
     client = ClientHandler(API_KEY)
     modules = [
         Dynamo(address, uuid) for address, uuid in

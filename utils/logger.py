@@ -1,6 +1,14 @@
+"""
+    Use:
+        Call dict_config() to setup your logging instance
+        Then, for each function, call get_logger(__name__)
+"""
+
 import logging
 import logging.handlers
 from logging import critical, error, warning, info, debug
+from logging.config import dictConfig as dict_config
+from logging import getLogger as get_logger
 import graypy
 import time
 
@@ -18,7 +26,10 @@ LEVEL_DICT = {
     }
 
 class Logger(object, metaclass=Singleton):
-    """description of class"""
+    """
+    Deprecated !
+    Use <this module>.dict_config(LOGGING_DICT) in instance
+    """
 
     def __init__(self, **kwargs):
         """
@@ -37,7 +48,7 @@ class Logger(object, metaclass=Singleton):
         self.format.default_msec_format = '%s.%03d'
         self.__set = False
         return super().__init__(**kwargs)
-
+    
     def _handler_factory(self, handlertype, *args, **kwargs) -> logging.Handler:
         handler = handlertype(*args, **kwargs)
         handler.setLevel(LEVEL_DICT[kwargs.get('level', 'notset')])

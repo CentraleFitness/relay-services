@@ -5,7 +5,7 @@
 """
 
 import requests
-import utils.logger as logger
+import utils.logger as mlogger
 
 from config.master import *
 
@@ -18,9 +18,10 @@ class ClientHandler:
         args:
             api_key: The API key to authenticate to the server
         """
-        self.base_url = SERVER_URL
+        self.base_url = API_URL
         self.api_key = api_key
         self.timeout = 1
+        self.logger = mlogger.get_logger(__name__)
 
     def get_module_id(self, mlists: list) -> dict:
         try:
@@ -34,7 +35,7 @@ class ClientHandler:
                 timeout=self.timeout)
             resp.raise_for_status()
         except Exception as ex:
-            logger.error("Exception handled: {}".format(ex))
+            self.logger.error("Exception handled: {}".format(ex))
             return None
         jresp = resp.json()
         #if jresp["status"] == "ko":
@@ -44,7 +45,7 @@ class ClientHandler:
         #if isinstance(jresp["id"], dict):
         #    return jresp["id"]
         if jresp["code"] != "GENERIC_OK":
-            logger.error("KO: Error code {}".format(jresp['code']))
+            self.logger.error("KO: Error code {}".format(jresp['code']))
             return None
         return jresp["moduleIDS"]
 
@@ -60,11 +61,11 @@ class ClientHandler:
                 timeout=self.timeout)
             resp.raise_for_status()
         except Exception as ex:
-            logger.error("Exception handled: {}".format(ex))
+            self.logger.error("Exception handled: {}".format(ex))
             return None
         jresp = resp.json()
         if jresp["code"] != "GENERIC_OK":
-            logger.error("KO: Error code {}".format(jresp['code']))
+            self.logger.error("KO: Error code {}".format(jresp['code']))
             return None
         return jresp.get("commande", [])
         #if jresp["status"] == "ko":
