@@ -3,11 +3,10 @@ import random
 import argparse
 import time
 
-# Create file config/master.py following template.py in the same folder
 from config import *
-import utils.logger as mlogger
-from hardware.dynamo import Dynamo
-from network.client_handler import ClientHandler
+from utils import Pid, get_logger
+from hardware import Dynamo
+from network import ClientHandler
 
 
 def random_range(floor: float, ceil: float, point: int) -> float:
@@ -73,8 +72,10 @@ def main():
     return 0
 
 if __name__ == "__main__":
-    mlogger.dict_config(LOGGING_DICT)
-    logger = mlogger.get_logger(__name__)
+    my_pid = Pid("cf_api")
+    assert not my_pid.is_running()
+    my_pid.set_pidfile()
+    logger = get_logger(__name__)
     ret = main()
     if ret == 0:
         logger.info("Program stopped without any problem")

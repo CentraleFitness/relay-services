@@ -58,7 +58,7 @@ if __name__ == "__main__":
     display.refresh()
 
     my_pid = Pid("oled")
-    assert not my_pid.get_is_running()
+    assert not my_pid.is_running()
     my_pid.set_pidfile()
     server = socketserver.UDPServer(('127.0.1.1', 4000), CommandUDPHandler)
     server.serve_forever()

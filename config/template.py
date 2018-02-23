@@ -1,3 +1,9 @@
+"""
+    This is a template file
+    You should create a file 'master.py' in the same folder,
+    then fill the empty global variables down here
+"""
+
 ##      General             ##
 SERVER_IP = ''
 

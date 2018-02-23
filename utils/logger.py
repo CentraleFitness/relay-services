@@ -12,7 +12,11 @@ from logging import getLogger as get_logger
 import graypy
 import time
 
+from config import LOGGING_DICT
+
 from .singleton import Singleton
+
+dict_config(LOGGING_DICT)
 
 SYSLOG_ADDR = ('localhost', logging.handlers.SYSLOG_UDP_PORT)
 
