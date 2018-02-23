@@ -22,4 +22,3 @@ class BluetoothHandler:
         self.type = "Server"
         self.clients = {}
         return super().__init__(**kwargs)
-

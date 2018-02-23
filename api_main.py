@@ -29,8 +29,6 @@ def main():
                         action='store',
                         default=2)
     args = parser.parse_args()
-    mlogger.dict_config(LOGGING_DICT)
-    logger = mlogger.get_logger(__name__)
     client = ClientHandler(API_KEY)
     modules = [
         Dynamo(address, uuid) for address, uuid in
@@ -75,6 +73,8 @@ def main():
     return 0
 
 if __name__ == "__main__":
+    mlogger.dict_config(LOGGING_DICT)
+    logger = mlogger.get_logger(__name__)
     ret = main()
     if ret == 0:
         logger.info("Program stopped without any problem")
