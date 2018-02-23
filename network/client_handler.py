@@ -20,7 +20,7 @@ class ClientHandler:
         """
         self.base_url = API_URL
         self.api_key = API_KEY
-        self.timeout = 1
+        self.timeout = 30
         self.logger = mlogger.get_logger(__name__)
 
     def get_module_id(self, mlists: list) -> dict:
