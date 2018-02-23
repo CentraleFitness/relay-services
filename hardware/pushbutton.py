@@ -35,7 +35,7 @@ class Pushbutton(object):
             return (self.name, self.status)
         return None
 
-    def status(self, force_update=False) -> tuple:
+    def actual_status(self, force_update=False) -> tuple:
         if force_update:
             self._update_status()
         return (self.name, self.status)

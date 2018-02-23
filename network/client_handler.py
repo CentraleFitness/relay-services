@@ -7,19 +7,19 @@
 import requests
 import utils.logger as mlogger
 
-from config import *
+from config import API_URL, API_KEY
 
 class ClientHandler:
     """
     Send requests to the main server
     """
-    def __init__(self, api_key):
+    def __init__(self):
         """
         args:
             api_key: The API key to authenticate to the server
         """
         self.base_url = API_URL
-        self.api_key = api_key
+        self.api_key = API_KEY
         self.timeout = 1
         self.logger = mlogger.get_logger(__name__)
 

@@ -27,7 +27,7 @@ class ThreadController():
 
     def start(self, func, *args, **kwargs):
         if isinstance(kwargs.get('factory', None), (list, tuple)):
-            for t_args in kwargs['factory']:                   
+            for t_args in kwargs['factory']:
                 id = self._get_id()
                 self.futures[id] = self.executor.submit(func, id, self, *t_args)
                 self.status[id] = ThreadStatus.RUNNING

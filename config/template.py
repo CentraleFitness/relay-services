@@ -48,5 +48,4 @@ LOGGING_DICT = {
             'propagate': True
             }
         }
-    
     }

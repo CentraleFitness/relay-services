@@ -126,7 +126,7 @@ if __name__ == "__main__":
     c.start(input_controller, factory=
             ((joy1, ),
              (a_button, ),
-             (b_button, )))    
+             (b_button, )))
     try:
         while True:
             while not c.queue.empty():

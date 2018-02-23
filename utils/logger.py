@@ -4,13 +4,13 @@
         Then, for each function, call get_logger(__name__)
 """
 
+import time
 import logging
 import logging.handlers
 from logging import critical, error, warning, info, debug
 from logging.config import dictConfig as dict_config
 from logging import getLogger as get_logger
 import graypy
-import time
 
 from config import LOGGING_DICT
 
@@ -52,7 +52,7 @@ class Logger(object, metaclass=Singleton):
         self.format.default_msec_format = '%s.%03d'
         self.__set = False
         return super().__init__(**kwargs)
-    
+
     def _handler_factory(self, handlertype, *args, **kwargs) -> logging.Handler:
         handler = handlertype(*args, **kwargs)
         handler.setLevel(LEVEL_DICT[kwargs.get('level', 'notset')])
@@ -68,7 +68,7 @@ class Logger(object, metaclass=Singleton):
         logging.basicConfig(handlers=self.handlers, level=LEVEL_DICT[self.level])
         self.__set = True
 
-    def add_file_handler(self,  destfolder: str = "./logs/",
+    def add_file_handler(self, destfolder: str = "./logs/",
                          nameformat: str = "%y%m%d_%H%M%S", **kwargs) -> None:
         """
         Give a file nameformat and a folder to write logs in a file

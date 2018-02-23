@@ -21,7 +21,7 @@ class Dynamo:
             Return the sum of the accumulated production (in Watt)
         """
         self.mutex.acquire(blocking=True)
-        mem =  sum(self.t_prod)
+        mem = sum(self.t_prod)
         self.t_prod.clear()
         self.mutex.release()
         return mem

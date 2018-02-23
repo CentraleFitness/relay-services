@@ -9,7 +9,7 @@ if platform.system() == 'Windows':
     ### I actually have no idea how to do it on Windows
     ### I'll research that later
     class Pid:
-        def __init__(self, name: str):
+        def __init__(self, *args):
             return None
 
         def is_running(self):
@@ -38,4 +38,3 @@ else:
         def set_pidfile(self):
             with open(self._file, 'w') as file:
                 file.write(str(self._pid))
-        

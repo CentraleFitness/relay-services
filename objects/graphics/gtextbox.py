@@ -1,5 +1,5 @@
-from PIL import Image, ImageFont, ImageDraw, ImageOps
 from collections import defaultdict
+from PIL import Image, ImageFont, ImageDraw, ImageOps
 
 from objects.textbox import TextBox
 

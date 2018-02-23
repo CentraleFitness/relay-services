@@ -1,1 +1,5 @@
+"""
+    config
+"""
+
 from .master import *

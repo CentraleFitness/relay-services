@@ -10,14 +10,14 @@ from pid.pid import Pid
 class CommandUDPHandler(socketserver.BaseRequestHandler):
     def setup(self):
         pass
-    
+
     def handle(self):
         data = self.request[0].strip()
         print("{}: {}".format(self.client_address[0], data))
         fptr, param = self.parse(data)
         if fptr:
             fptr(param)
-        
+
     def finish(self):
         display.refresh()
 
@@ -44,7 +44,7 @@ class CommandUDPHandler(socketserver.BaseRequestHandler):
     def stop_server(self, *args):
         threading.Thread(target=self.server.shutdown).start()
 
-        
+
 if __name__ == "__main__":
     display = Oled()
     display.clear_screen()

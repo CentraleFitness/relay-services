@@ -1,19 +1,35 @@
-import sys
+"""
+    api_main
+"""
+
 import random
 import argparse
 import time
 
-from config import *
 from utils import Pid, get_logger
 from hardware import Dynamo
 from network import ClientHandler
 
+random.seed()
 
 def random_range(floor: float, ceil: float, point: int) -> float:
+    """
+        Create a 'random' value between the given values
+        args:
+            floor: The minimum value
+            ceil: The maximum value
+            point: The number of decimals after the floating point
+    """
     return round(random.uniform(floor, ceil), point)
-        
+
 def main():
-    random.seed()
+    """
+        main
+    """
+    my_pid = Pid("cf_api")
+    assert not my_pid.is_running()
+    my_pid.set_pidfile()
+    logger = get_logger(__name__)
     parser = argparse.ArgumentParser(description="API communication experiment")
     parser.add_argument('--range', '-r',
                         help="Production range (in Watt)",
@@ -28,7 +44,7 @@ def main():
                         action='store',
                         default=2)
     args = parser.parse_args()
-    client = ClientHandler(API_KEY)
+    client = ClientHandler()
     modules = [
         Dynamo(address, uuid) for address, uuid in
         ((0x2, "001:001:001"), (0x3, "001:001:002"))
@@ -69,19 +85,6 @@ def main():
                         for dynamo in modules:
                             if dynamo.uuid == param['UUID']:
                                 dynamo.session_id = param["moduleID"]
-    return 0
 
 if __name__ == "__main__":
-    my_pid = Pid("cf_api")
-    assert not my_pid.is_running()
-    my_pid.set_pidfile()
-    logger = get_logger(__name__)
-    ret = main()
-    if ret == 0:
-        logger.info("Program stopped without any problem")
-    else:
-        logger.critical(
-            """
-            An error occured and cause the program to stop.
-            Return code {}
-            """.format(ret))
+    main()
