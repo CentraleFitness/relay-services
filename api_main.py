@@ -4,7 +4,7 @@ import argparse
 import time
 
 # Create file config/master.py following template.py in the same folder
-from config.master import *
+from config import *
 import utils.logger as mlogger
 from hardware.dynamo import Dynamo
 from network.client_handler import ClientHandler

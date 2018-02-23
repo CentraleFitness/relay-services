@@ -7,7 +7,7 @@
 import requests
 import utils.logger as mlogger
 
-from config.master import *
+from config import *
 
 class ClientHandler:
     """
