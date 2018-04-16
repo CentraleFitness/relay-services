@@ -1,9 +1,0 @@
-Adafruit-GPIO==1.0.3
-Adafruit-PureIO==0.2.1
-Adafruit-SSD1306==1.6.1
-gattlib==0.20150805
-olefile==0.44
-Pillow==4.2.1
-PyBluez==0.22
-RPi.GPIO==0.6.3
-spidev==3.2
