@@ -6,8 +6,9 @@ import random
 import argparse
 import time
 
-from utils import Pid, get_logger
-from hardware import Dynamo
+from utils import Pid
+from utils.logger import get_logger
+from peripheral import Dynamo
 from network import ClientHandler
 
 random.seed()
@@ -26,7 +27,7 @@ def main():
     """
         main
     """
-    my_pid = Pid("cf_api")
+    my_pid = Pid("cf_client_api")
     assert not my_pid.is_running()
     my_pid.set_pidfile()
     logger = get_logger(__name__)

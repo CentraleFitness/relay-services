@@ -6,3 +6,6 @@
 /client/.vs/client/v15
 *.pyproj
 *.sln
+/client/config/master.py
+__pycache__
+/client/venv
