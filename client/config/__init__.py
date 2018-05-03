@@ -1,5 +1,0 @@
-"""
-    config
-"""
-
-from .master import *

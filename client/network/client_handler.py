@@ -5,25 +5,23 @@
 """
 
 import requests
-import utils.logger as mlogger
-
-from config import API_URL, API_KEY
+import logging
 
 class ClientHandler:
     """
     Send requests to the main server
     """
-    def __init__(self):
+    def __init__(self, request_url: str, api_key: str):
         """
         args:
             api_key: The API key to authenticate to the server
         """
-        self.base_url = API_URL
-        self.api_key = API_KEY
+        self.base_url = request_url
+        self.api_key = api_key
         self.timeout = 30
-        self.logger = mlogger.get_logger(__name__)
+        self.logger = logging.getLogger(__name__)
 
-    def get_module_id(self, mlists: list) -> dict:
+    def get_module_id(self, mlists: list) -> list:
         try:
             resp = requests.post(
                 "{}{}".format(self.base_url, "module/get/ids"),
@@ -38,16 +36,14 @@ class ClientHandler:
             self.logger.error("Exception handled: {}".format(ex))
             return None
         jresp = resp.json()
-        #if jresp["status"] == "ko":
-        #    ## Handle that error
-        #    print(jresp["reason"])
-        #    return None
-        #if isinstance(jresp["id"], dict):
-        #    return jresp["id"]
         if jresp["code"] != "GENERIC_OK":
             self.logger.error("KO: Error code {}".format(jresp['code']))
             return None
-        return jresp["moduleIDS"]
+        id_list = jresp.get('moduleIDS', [])
+        if not id_list:
+            logger.critical("Empty module ids. Execution stop.")
+            raise AssertionError
+        return id_list
 
     def module_send_production(self, prod_d: dict) -> dict:
         try:

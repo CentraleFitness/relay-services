@@ -2,12 +2,14 @@
     api_main
 """
 
+import json
 import random
 import argparse
 import time
 
 from utils import Pid
-from utils.logger import get_logger
+from logging import getLogger
+from logging.config import dictConfig
 from peripheral import Dynamo
 from network import ClientHandler
 
@@ -30,7 +32,8 @@ def main():
     my_pid = Pid("cf_client_api")
     assert not my_pid.is_running()
     my_pid.set_pidfile()
-    logger = get_logger(__name__)
+
+
     parser = argparse.ArgumentParser(description="API communication experiment")
     parser.add_argument('--range', '-r',
                         help="Production range (in Watt)",
@@ -44,27 +47,23 @@ def main():
                         type=int,
                         action='store',
                         default=2)
+    parser.add_argument('-s', '--settings',
+                        help="path to the json config file",
+                        type=str,
+                        action='store',
+                        default='./settings.json')
     args = parser.parse_args()
-    client = ClientHandler()
-    modules = [
-        Dynamo(address, uuid) for address, uuid in
-        ((0x2, "001:001:001"), (0x3, "001:001:002"))
-        ]
+    with open(args.settings, 'r') as fhandler:
+        data = json.load(fhandler)
+    dictConfig(data['logging_dict'])
+    logger = getLogger(__name__)
+    client = ClientHandler(data['server']['api_url'], data['server']['api_key'])
+    modules = [Dynamo(0x01, "001:001:001")]
     logger.info("Program started")
-    #id_dict = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
-    #for dynamo in modules:
-    #    if dynamo.uuid in id_dict:
-    #        dynamo.session_id = id_dict[dynamo.uuid]
-    #        print("uuid: {}, session_id {}".format(dynamo.uuid,
-    #                                               dynamo.session_id))
-    #    else:
-    #        print("missing session_id for module {}".format(dynamo.uuid))
     id_list = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
-    if not id_list:
-        logger.critical("Empty module ids. Execution stop.")
-        return 1
     for it, dynamo in enumerate(modules):
         dynamo.session_id = id_list[it]
+    # TODO
     logger.info("Initialisation done. Send production NOW.")
     execution = True
     prod_d = dict()

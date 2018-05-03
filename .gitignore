@@ -9,3 +9,4 @@
 /client/config/master.py
 __pycache__
 /client/venv
+/client/settings.json
