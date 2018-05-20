@@ -41,7 +41,7 @@ class ClientHandler:
             return None
         id_list = jresp.get('moduleIDS', [])
         if not id_list:
-            logger.critical("Empty module ids. Execution stop.")
+            self.logger.critical("Empty module ids. Execution stop.")
             raise AssertionError
         return id_list
 
@@ -64,7 +64,3 @@ class ClientHandler:
             self.logger.error("KO: Error code {}".format(jresp['code']))
             return None
         return jresp.get("commande", [])
-        #if jresp["status"] == "ko":
-        #    ## Handle that error
-        #    print(jresp["reason"])
-        #    return None

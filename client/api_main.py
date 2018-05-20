@@ -60,7 +60,7 @@ def main():
     client = ClientHandler(data['server']['api_url'], data['server']['api_key'])
     modules = [Dynamo(0x01, "001:001:001")]
     logger.info("Program started")
-    id_list = client.get_module_id(tuple(dynamo.uuid for dynamo in modules))
+    id_list = client.get_module_id([dynamo.uuid for dynamo in modules])
     for it, dynamo in enumerate(modules):
         dynamo.session_id = id_list[it]
     # TODO
@@ -74,17 +74,16 @@ def main():
                 random_range(args.range[0], args.range[1], args.point))
             prod_d[dynamo.uuid] = dynamo.prod_sum()
         logger.debug(prod_d)
-        ret = client.module_send_production(prod_d)
+        commands = client.module_send_production(prod_d)
         time.sleep(1)
-        if ret is None:
+        if commands is None:
             execution = False
         else:
-            for command in ret:
-                if command["cmd"] == "setModuleId":
-                    for param in command["params"]:
-                        for dynamo in modules:
-                            if dynamo.uuid == param['UUID']:
-                                dynamo.session_id = param["moduleID"]
+            for command in commands:
+                if command[0] == "setModuleId":
+                    for dynamo in modules:
+                        if dynamo.uuid == command[1]:
+                            dynamo.session_id = command[2]
 
 if __name__ == "__main__":
     main()
