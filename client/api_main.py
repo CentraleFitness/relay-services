@@ -63,7 +63,6 @@ def main():
     id_list = client.get_module_id([dynamo.uuid for dynamo in modules])
     for it, dynamo in enumerate(modules):
         dynamo.session_id = id_list[it]
-    # TODO
     logger.info("Initialisation done. Send production NOW.")
     execution = True
     prod_d = dict()
