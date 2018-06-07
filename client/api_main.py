@@ -6,6 +6,7 @@ import json
 import random
 import argparse
 import time
+import uuid
 
 from utils import Pid
 from logging import getLogger
@@ -58,12 +59,14 @@ def main():
     dictConfig(data['logging_dict'])
     logger = getLogger(__name__)
     client = ClientHandler(data['server']['api_url'], data['server']['api_key'])
-    modules = [Dynamo(0x01, "001:001:001")]
-    logger.info("Program started")
+    modules = [
+        Dynamo(uuid=uuid.uuid4(), type='BIKE')
+        ]
+    logger.debug("Program started")
     id_list = client.get_module_id([dynamo.uuid for dynamo in modules])
     for it, dynamo in enumerate(modules):
         dynamo.session_id = id_list[it]
-    logger.info("Initialisation done. Send production NOW.")
+    logger.debug("Initialisation done. Send production NOW.")
     execution = True
     prod_d = dict()
     while execution:

@@ -10,3 +10,4 @@
 __pycache__
 /client/venv
 /client/settings.json
+/client/client.pyproj.user
