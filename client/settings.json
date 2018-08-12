@@ -1,8 +1,29 @@
 {
-    // PLEASE FILL ME
     "server": {
-        "api_url": "",
-        "api_key": ""
+        "api_url": "http://91.121.155.83:10000/",
+        "api_key": "5b706bfd24ee8498b7f48f88"
     },
-    "logging_dict": {}
+    "logging_dict": {
+        "version": 1,
+        "disable_existing_loggers": false,
+        "formatters": {
+            "standard": {
+                "format": "[%(asctime)s][%(levelname)s] %(message)s"
+            }
+        },
+        "handlers": {
+            "default": {
+                "level": "DEBUG",
+                "formatter": "standard",
+                "class": "logging.StreamHandler"
+            }
+        },
+        "loggers": {
+            "": {
+                "handlers": ["default"],
+                "level": "DEBUG",
+                "propagate": true
+            }
+        }
+    }
 }

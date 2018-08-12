@@ -9,3 +9,5 @@
 /client/config/master.py
 __pycache__
 /client/venv
+.vscode/
+
