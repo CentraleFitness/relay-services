@@ -12,6 +12,9 @@ from logging import getLogger
 from logging.config import dictConfig
 from peripheral import Dynamo
 from network import ClientHandler
+import config.config as config
+from config.logging import LOGGING_DICT
+
 
 random.seed()
 
@@ -53,11 +56,9 @@ def main():
                         action='store',
                         default='./settings.json')
     args = parser.parse_args()
-    with open(args.settings, 'r') as fhandler:
-        data = json.load(fhandler)
-    dictConfig(data['logging_dict'])
     logger = getLogger(__name__)
-    client = ClientHandler(data['server']['api_url'], data['server']['api_key'])
+    dictConfig(LOGGING_DICT)
+    client = ClientHandler(config.SERVER_BASEURL, config.API_KEY)
     modules = [Dynamo(0x01, "001:001:001")]
     logger.info("Program started")
     id_list = client.get_module_id([dynamo.uuid for dynamo in modules])

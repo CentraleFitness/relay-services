@@ -2,8 +2,7 @@
 
 import os
 import platform
-
-PID_DIR = "/var/run"
+import config.config as config
 
 if platform.system() == 'Windows':
     ### I actually have no idea how to do it on Windows
@@ -21,7 +20,7 @@ else:
     class Pid:
         def __init__(self, name: str):
             self._pid = os.getpid()
-            self._file = "{}/{}.pid".format(PID_DIR, name)
+            self._file = "{}/{}.pid".format(config.PID_DIR, name)
 
         def is_running(self):
             try:
