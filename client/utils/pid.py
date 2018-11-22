@@ -48,6 +48,8 @@ else:
                     fhandler.write(str(self._pid))
             except Exception as ex:
                 self.log.error(f"Exception handled: {ex}")
+                self.log.warning(
+                    "The program will run but doesn't have a pid set")
 
         def delete(self) -> None:
             try:
