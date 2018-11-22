@@ -67,23 +67,27 @@ def main():
     logger.info("Initialisation done. Send production NOW.")
     execution = True
     prod_d = dict()
-    while execution:
-        prod_d.clear()
-        for dynamo in modules:
-            dynamo.add_prod(
-                random_range(args.range[0], args.range[1], args.point))
-            prod_d[dynamo.uuid] = dynamo.prod_sum()
-        logger.debug(prod_d)
-        commands = client.module_send_production(prod_d)
-        time.sleep(1)
-        if commands is None:
-            execution = False
-        else:
-            for command in commands:
-                if command[0] == "setModuleId":
-                    for dynamo in modules:
-                        if dynamo.uuid == command[1]:
-                            dynamo.session_id = command[2]
+    try:
+        while execution:
+            prod_d.clear()
+            for dynamo in modules:
+                dynamo.add_prod(
+                    random_range(args.range[0], args.range[1], args.point))
+                prod_d[dynamo.uuid] = dynamo.prod_sum()
+            logger.debug(prod_d)
+            commands = client.module_send_production(prod_d)
+            time.sleep(1)
+            if commands is None:
+                execution = False
+            else:
+                for command in commands:
+                    if command[0] == "setModuleId":
+                        for dynamo in modules:
+                            if dynamo.uuid == command[1]:
+                                dynamo.session_id = command[2]
+    except KeyboardInterrupt:
+        pass
+    my_pid.delete()
 
 if __name__ == "__main__":
     main()

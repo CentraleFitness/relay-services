@@ -1,6 +1,7 @@
 """ Utility to run only one instance of a program """
 
 import os
+import logging
 import platform
 import config.config as config
 
@@ -19,13 +20,18 @@ if platform.system() == 'Windows':
 else:
     class Pid:
         def __init__(self, name: str):
+            self.log = logging.getLogger()
             self._pid = os.getpid()
             self._file = "{}/{}.pid".format(config.PID_DIR, name)
+            if config.PID_DIR != '/var/run':
+                print(
+                    "You are using a directory not root-friendly, "
+                    "make sure that you have the correct access rights")
 
-        def is_running(self):
+        def is_running(self) -> bool:
             try:
-                with open(self._file, 'r') as file:
-                    old_pid = int(file.read())
+                with open(self._file, 'r') as fhandler:
+                    old_pid = int(fhandler.read())
             except FileNotFoundError:
                 return False
             try:
@@ -34,6 +40,17 @@ else:
                 return False
             return True
 
-        def set_pidfile(self):
-            with open(self._file, 'w') as file:
-                file.write(str(self._pid))
+        def set_pidfile(self) -> None:
+            try:
+                if not os.path.isdir(os.path.dirname(self._file)):
+                    os.makedirs(os.path.dirname(self._file))
+                with open(self._file, 'w') as fhandler:
+                    fhandler.write(str(self._pid))
+            except Exception as ex:
+                self.log.error(f"Exception handled: {ex}")
+
+        def delete(self) -> None:
+            try:
+                os.remove(self._file)
+            except Exception as ex:
+                self.log.error(f"Exception handled: {ex}")
