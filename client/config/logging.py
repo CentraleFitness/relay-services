@@ -14,10 +14,15 @@ LOGGING_DICT = {
         }
     },
     "loggers": {
-        "": {
+        "__main__": {
             "handlers": ["default"],
             "level": "DEBUG",
             "propagate": True
-        }
+        },
+        "config": {
+            "handlers": ["default"],
+            "level": "INFO",
+            "propagate": True
+        },
     }
 }
